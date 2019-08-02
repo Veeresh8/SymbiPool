@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/rootLayout"
+              android:background="#E0E0E0"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:background="@color/colorAccent"
+                    android:layout_height="wrap_content">
+
+
+        <ImageView
+                android:id="@+id/ivClose"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_margin="16dp"
+                app:srcCompat="@drawable/round_keyboard_backspace_24px"/>
+
+
+        <TextView
+                android:text="Create Ticket"
+                android:layout_width="match_parent"
+                android:padding="26dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textAlignment="center"
+                android:textColor="@android:color/white" android:textSize="18sp"/>
+
+    </RelativeLayout>
+
+
+    <ernestoyaquello.com.verticalstepperform.VerticalStepperFormView
+            android:id="@+id/stepperForm"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:form_last_button_text="Create Ticket"
+            app:form_circle_background_color="@color/colorPrimary"
+            app:form_next_button_background_color="@color/colorPrimary"
+            app:form_next_button_pressed_background_color="@color/colorPrimaryDark"
+            app:form_cancel_button_background_color="@android:color/transparent"
+            app:form_cancel_button_pressed_background_color="@android:color/transparent"
+            app:form_cancel_button_text_color="@color/colorPrimary"
+            app:form_cancel_button_pressed_text_color="@color/colorPrimaryDark"
+            android:layout_marginTop="8dp"/>
+
+    <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieAnimation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:lottie_autoPlay="true"
+            app:lottie_speed="0.9"
+            app:lottie_loop="false"
+            app:lottie_fileName="loading.json"/>
+</LinearLayout>

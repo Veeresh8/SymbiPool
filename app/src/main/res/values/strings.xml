@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">SymbiPool</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="gender_preference">Select Gender Preference</string>
+    <string name="select">Select</string>
+
+
+    <string-array name="steps_titles">
+        <item>Date</item>
+        <item>Time</item>
+        <item>Start Address</item>
+        <item>Destination Address</item>
+        <item>Gender Preference</item>
+    </string-array>
+
+</resources>

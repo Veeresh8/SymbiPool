@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "18441301072",
+    "firebase_url": "https://symbipool-dev.firebaseio.com",
+    "project_id": "symbipool-dev",
+    "storage_bucket": "symbipool-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18441301072:android:e57c44105716eb7a",
+        "android_client_info": {
+          "package_name": "com.droid.symbipool.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "18441301072-110puhb6alml6hk3cek7f5ru23p1shcp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgWs2pqds_wgPPSP5CzK1LT3An2It714o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "18441301072-110puhb6alml6hk3cek7f5ru23p1shcp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
