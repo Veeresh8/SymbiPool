@@ -13,7 +13,10 @@ import java.text.SimpleDateFormat
 class DateStep(title: String) : Step<String>(title) {
 
     private var datePicked: String? = null
-    var dateFormat = SimpleDateFormat("dd-MMM-yyyy")
+
+    companion object {
+        var dateFormat = SimpleDateFormat("dd-MMM-yyyy")
+    }
 
     override fun restoreStepData(data: String?) {
 

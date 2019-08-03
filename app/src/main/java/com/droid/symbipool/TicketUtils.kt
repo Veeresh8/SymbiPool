@@ -7,6 +7,8 @@ import android.util.Log
 import com.droid.symbipool.creationSteps.GenderStep
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 
 object TicketUtils {
@@ -14,6 +16,21 @@ object TicketUtils {
     var allStartLocations: Set<String> = HashSet()
     var allEndLocations: Set<String> = HashSet()
     var allCities: Set<String> = HashSet()
+
+
+    var filteredList: List<Ticket> = ArrayList()
+    var allTickets: ArrayList<Ticket> = ArrayList()
+
+    const val ANY_LOCATION = "All"
+
+    fun clearAllLists() {
+        filteredList = ArrayList()
+        allTickets = ArrayList()
+
+        allCities = HashSet()
+        allEndLocations = HashSet()
+        allStartLocations = HashSet()
+    }
 
     fun getTimeAndDate(ticket: Ticket): String {
         val timeStringBuilder = StringBuilder()
@@ -126,6 +143,15 @@ object TicketUtils {
     }
 
     fun addLocations(ticket: Ticket) {
+
+        if (!allEndLocations.contains(ANY_LOCATION)) {
+            allEndLocations = allEndLocations.plus(ANY_LOCATION)
+        }
+
+        if (!allStartLocations.contains(ANY_LOCATION)) {
+            allStartLocations = allStartLocations.plus(ANY_LOCATION)
+        }
+
         ticket.startLocation?.subLocality?.run {
             allStartLocations = allStartLocations.plus(this)
         }
@@ -141,5 +167,19 @@ object TicketUtils {
         ticket.endLocation?.locality?.run {
             allCities = allCities.plus(this)
         }
+    }
+
+    fun endLocalityCheck(ticket: Ticket, ticketFilter: TicketFilter): Boolean {
+        return ticket.endLocation?.subLocality == ticketFilter.endLocation?.first &&
+                ticket.endLocation?.locality == ticketFilter.endLocation?.second
+    }
+
+    fun genderCheck(ticket: Ticket, ticketFilter: TicketFilter): Boolean {
+        return ticket.genderPreference == ticketFilter.genderPreference
+    }
+
+    fun startLocalityCheck(ticket: Ticket, ticketFilter: TicketFilter): Boolean {
+        return ticket.startLocation?.subLocality == ticketFilter.startLocation?.first &&
+                ticket.startLocation?.locality == ticketFilter.startLocation?.second
     }
 }

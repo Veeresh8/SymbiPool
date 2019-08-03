@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.afollestad.materialdialogs.MaterialDialog
 import com.droid.symbipool.creationSteps.DateStep
 import com.droid.symbipool.creationSteps.GenderStep
 import com.droid.symbipool.creationSteps.TimeStep
@@ -127,10 +128,16 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
                 if (this.size > 0) {
                     val address = addresses[0]
 
-                    var area = ""
-
-                    area = area.plus("Area: ${address.subLocality}").plus("\n\n")
-                        .plus("City: ${address.locality}").plus("\n")
+                    if (address.subLocality == null || address.locality == null) {
+                        MaterialDialog(this@CreateTicketActivity).show {
+                            title(R.string.error_area_not_found_title)
+                            cancelable(false)
+                            message(R.string.error_area_not_found_message)
+                            positiveButton(R.string.got_it) {
+                                showPlacePicker()
+                            }
+                        }
+                    }
 
                     when (locationType) {
                         LocationType.START -> {
@@ -144,7 +151,15 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
 
                             startLocation = pickedStartLocation
 
-                            startLocation?.fullAddress?.let { startLocationStep.setLocationText(it, area) }
+                            startLocation?.fullAddress?.let {
+                                startLocationStep.setLocationText(
+                                    Triple(
+                                        address.subLocality,
+                                        address.locality,
+                                        it
+                                    )
+                                )
+                            }
 
                         }
                         LocationType.END -> {
@@ -158,7 +173,15 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
 
                             endLocation = pickedEndLocation
 
-                            endLocation?.fullAddress?.let { endLocationStep.setLocationText(it, area) }
+                            endLocation?.fullAddress?.let {
+                                endLocationStep.setLocationText(
+                                    Triple(
+                                        address.subLocality,
+                                        address.locality,
+                                        it
+                                    )
+                                )
+                            }
 
                         }
                     }
@@ -185,19 +208,18 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
     }
 
 
-    inner class LocationStep(title: String, isStart: String?) : Step<String>(title, isStart) {
+    inner class LocationStep(title: String, private val isStart: String?) : Step<String>(title, isStart) {
 
         private var tvLocationText: TextView? = null
-        private val isStart = isStart
 
         override fun restoreStepData(data: String?) {
 
         }
 
         override fun isStepDataValid(stepData: String?): IsDataValid {
-            return if (isStart != null && startLocation != null) {
+            return if (isStart != null && startLocation != null && startLocation?.subLocality != null && startLocation?.locality != null) {
                 IsDataValid(true)
-            } else if (endLocation != null) {
+            } else if (endLocation != null && endLocation?.subLocality != null && endLocation?.locality != null) {
                 IsDataValid(true)
             } else {
                 IsDataValid(false)
@@ -251,10 +273,22 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
 
         }
 
-        fun setLocationText(location: String, area: String) {
+        fun setLocationText(addressPair: Triple<String?, String?, String?>) {
+
+            var area = ""
+
+            area = area.plus("Area: ${addressPair.first}").plus("\n\n")
+                .plus("City: ${addressPair.second}").plus("\n")
+
             updateSubtitle(area, false)
-            tvLocationText?.text = location
-            markAsCompleted(false)
+
+            tvLocationText?.text = addressPair.third
+
+            if (addressPair.first != null && addressPair.second != null && addressPair.third != null) {
+                markAsCompleted(false)
+            } else {
+                tvLocationText?.text = "Pick some address near the current one"
+            }
         }
     }
 

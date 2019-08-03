@@ -3,7 +3,6 @@ package com.droid.symbipool
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.droid.symbipool.filterTicket.FilterActivity
@@ -14,6 +13,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private var adapter: ViewpagerAdapter? = null
+
+    private var allTicketsFragment = AllTicketsFragment.newInstance()
+    private var myTicketsFragment = MyTicketsFragment.newInstance()
+    private var requestsFragment = RequestsFragment.newInstance()
 
     companion object {
         var INTENT_CODE = 1337
@@ -35,13 +38,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViewPager() {
 
-        toolbarTitle.text = getString(R.string.app_name)
-
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
 
         val viewPager: ViewPager = findViewById(R.id.viewPager)
 
         adapter = ViewpagerAdapter(supportFragmentManager)
+
+        adapter?.allFragments?.add(allTicketsFragment)
+        adapter?.allFragments?.add(myTicketsFragment)
+        adapter?.allFragments?.add(requestsFragment)
 
         viewPager.offscreenPageLimit = 3
 
@@ -74,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == INTENT_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 val ticketFilter = data?.getSerializableExtra(TICKET_FILTER) as TicketFilter
-                val allTicketsFragment = adapter?.getItem(0) as AllTicketsFragment
                 allTicketsFragment.filter(ticketFilter)
             }
         }

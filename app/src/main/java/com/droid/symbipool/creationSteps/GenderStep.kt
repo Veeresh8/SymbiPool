@@ -55,10 +55,11 @@ class GenderStep(title: String) : Step<String>(title) {
         val myItems = listOf("Male Only", "Female Only", "None")
         val tvGender = view.findViewById<TextView>(R.id.tvGender)
         genderPreference = GenderPreference.NONE
+        tvGender.text = genderPreference?.name
         tvGender.setOnClickListener {
             MaterialDialog(context).show {
                 title(R.string.gender_preference)
-                listItemsSingleChoice(items = myItems, initialSelection = 3) { _, index, _ ->
+                listItemsSingleChoice(items = myItems, initialSelection = 2) { _, index, _ ->
                     when (index) {
                         0 -> genderPreference = GenderPreference.MALE
                         1 -> genderPreference = GenderPreference.FEMALE

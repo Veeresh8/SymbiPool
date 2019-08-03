@@ -41,7 +41,7 @@ class EndStep(title: String) : Step<Pair<String, String>>(title) {
     }
 
     override fun getStepDataAsHumanReadableString(): String {
-        return "$locality , $city"
+        return tvEndLocation?.text.toString()
     }
 
     override fun createStepContentLayout(): View {
@@ -51,10 +51,18 @@ class EndStep(title: String) : Step<Pair<String, String>>(title) {
             val localityDialog = MaterialDialog(context)
                 .title(R.string.end_location)
                 .listItemsSingleChoice(
-                    items = TicketUtils.getAllStartLocations(),
+                    items = TicketUtils.getAllEndLocations(),
                     initialSelection = 0
                 ) { _, index, _ ->
-                    locality = TicketUtils.getStartLocationPicked(index)
+
+                    if (index == 0) {
+                        endLocation = Pair(TicketUtils.ANY_LOCATION, TicketUtils.ANY_LOCATION)
+                        tvEndLocation?.text = TicketUtils.ANY_LOCATION
+                        markAsCompleted(false)
+                        return@listItemsSingleChoice
+                    }
+
+                    locality = TicketUtils.getEndLocationPicked(index)
                     showCityDialog(context)
                 }
                 .positiveButton(R.string.select)

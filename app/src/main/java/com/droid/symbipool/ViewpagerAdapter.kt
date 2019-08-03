@@ -6,11 +6,21 @@ import androidx.fragment.app.FragmentPagerAdapter
 
 class ViewpagerAdapter(fragmentManager: FragmentManager) : FragmentPagerAdapter(fragmentManager) {
 
-    override fun getItem(position: Int): Fragment = when (position) {
-        0 -> AllTicketsFragment.newInstance()
-        1 -> MyTicketsFragment.newInstance()
-        2 -> RequestsFragment.newInstance()
-        else -> AllTicketsFragment.newInstance()
+    val allFragments: ArrayList<Fragment> = ArrayList()
+
+    override fun getItem(position: Int): Fragment {
+        return when (position) {
+            0 -> {
+                allFragments[0]
+            }
+            1 -> {
+                allFragments[1]
+            }
+            2 -> {
+                allFragments[2]
+            }
+            else -> allFragments[0]
+        }
     }
 
     override fun getPageTitle(position: Int): CharSequence = when (position) {
