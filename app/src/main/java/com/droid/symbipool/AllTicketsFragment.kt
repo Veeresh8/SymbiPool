@@ -1,32 +1,37 @@
 package com.droid.symbipool
 
-import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.text.format.DateUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.droid.symbipool.TicketUtils.getPreference
-import com.droid.symbipool.steps.GenderStep
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.droid.symbipool.adapters.AllTicketsAdapter
+import com.google.android.material.chip.Chip
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_all_ticket.*
-import kotlinx.android.synthetic.main.item_all_ticket.view.*
+import kotlinx.android.synthetic.main.fragment_all_tickets.*
+
 
 class AllTicketsFragment : Fragment() {
 
-    private var adapter: FirestoreRecyclerAdapter<*, *>? = null
+    private var adapter: AllTicketsAdapter? = null
     private var linearLayoutManager: LinearLayoutManager? = null
     private var firestore: FirebaseFirestore? = null
     private var recyclerView: RecyclerView? = null
+    private var filterLayout: ConstraintLayout? = null
+    private var cpDate: Chip? = null
+
+    private var allStartLocations: Set<String?> = HashSet()
+    private var allEndLocations: Set<String?> = HashSet()
+    private val allTickets: ArrayList<Ticket> = ArrayList()
 
     companion object {
         fun newInstance(): AllTicketsFragment = AllTicketsFragment()
@@ -41,76 +46,68 @@ class AllTicketsFragment : Fragment() {
 
     private fun initUI(view: View) {
         recyclerView = view.findViewById(R.id.rvAllTickets)
+        cpDate = view.findViewById(R.id.cpDate)
+        filterLayout = view.findViewById(R.id.filterLayout)
         linearLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
         recyclerView?.layoutManager = linearLayoutManager
+        adapter = AllTicketsAdapter {
+            Snackbar.make(requireView(), "${it.startLocation?.subLocality}", Snackbar.LENGTH_LONG).show()
+        }
+        recyclerView?.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
+        cpDate?.text = DatabaseUtils.getCurrentDate()
     }
 
     private fun initQuery() {
-        val collection = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
-            .whereEqualTo("date", DatabaseUtils.getCurrentDate())
-            .orderBy("time", Query.Direction.ASCENDING)
+        FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
+            .whereEqualTo(DatabaseUtils.DATE, DatabaseUtils.getCurrentDate())
+            .orderBy(DatabaseUtils.TIME, Query.Direction.ASCENDING)
+            .addSnapshotListener { querySnapshot, error ->
+                querySnapshot?.run {
+                    if (error != null) {
+                        Log.e(TAG, "Query error: ${error.message}")
+                        return@addSnapshotListener
+                    }
 
-        val response = FirestoreRecyclerOptions.Builder<Ticket>()
-            .setQuery(collection, Ticket::class.java)
-            .build()
-
-        adapter = object : FirestoreRecyclerAdapter<Ticket, TicketViewHolder>(response) {
-            @SuppressLint("SetTextI18n")
-            override fun onBindViewHolder(holder: TicketViewHolder, position: Int, ticket: Ticket) {
-                holder.itemView.tvDateTime.text = TicketUtils.getTimeAndDate(ticket)
-                holder.itemView.tvStartAddress.text = TicketUtils.getStartAddress(ticket)
-                holder.itemView.tvDestination.text = TicketUtils.getDestinationAddress(ticket)
-
-                if (getPreference(ticket) != GenderStep.GenderPreference.NONE.name) {
-                    holder.itemView.tvPreference.visibility = View.VISIBLE
-                    holder.itemView.tvPreference.text = "${getPreference(ticket)} ONLY"
-                } else {
-                    holder.itemView.tvPreference.visibility = View.GONE
-                }
-
-                holder.itemView.tvNavStart.setOnClickListener {
-                    ticket.startLocation?.run {
-                        if (this.lat != null && this.longi != null) {
-                            TicketUtils.launchMapsWithCoordinates(this.lat, this.longi, holder.itemView.context)
+                    for (document in querySnapshot.documentChanges) {
+                        val ticket = document.document.toObject(Ticket::class.java)
+                        when (document.type) {
+                            DocumentChange.Type.ADDED -> {
+                                Log.i(TAG, "New ticket: $ticket")
+                                allStartLocations = allStartLocations.plus(ticket.startLocation?.subLocality)
+                                allEndLocations = allEndLocations.plus(ticket.endLocation?.subLocality)
+                                allTickets.add(ticket)
+                            }
+                            DocumentChange.Type.MODIFIED -> {
+                                Log.i(TAG, "Modified ticket: $ticket")
+                                allStartLocations = allStartLocations.plus(ticket.startLocation?.subLocality)
+                                allEndLocations = allEndLocations.plus(ticket.endLocation?.subLocality)
+                                allTickets.forEachIndexed { index, currentTicket ->
+                                    if (ticket.ticketID == currentTicket.ticketID) {
+                                        allTickets[index] = ticket
+                                    }
+                                }
+                            }
+                            DocumentChange.Type.REMOVED -> {
+                                Log.i(TAG, "Removed ticket: $ticket")
+                                allStartLocations = allStartLocations.minus(ticket.startLocation?.subLocality)
+                                allEndLocations = allEndLocations.minus(ticket.endLocation?.subLocality)
+                                allTickets.remove(ticket)
+                            }
                         }
                     }
-                }
 
-                holder.itemView.tvNavEnd.setOnClickListener {
-                    ticket.endLocation?.run {
-                        if (this.lat != null && this.longi != null) {
-                            TicketUtils.launchMapsWithCoordinates(this.lat, this.longi, holder.itemView.context)
-                        }
+                    allTickets.sortBy {
+                        it.time
                     }
+
+                    adapter?.submitList(allTickets.toList())
+
+                    Log.i(javaClass.simpleName, "Start locations: $allStartLocations")
+                    Log.i(javaClass.simpleName, "End locations: $allEndLocations")
+
+                    Snackbar.make(requireView(), "Found ${allTickets.size} results", Snackbar.LENGTH_LONG).show()
                 }
             }
-
-            override fun onCreateViewHolder(group: ViewGroup, i: Int): TicketViewHolder {
-                val view = LayoutInflater.from(group.context)
-                    .inflate(R.layout.item_all_ticket, group, false)
-                return TicketViewHolder(view)
-            }
-
-            override fun onError(exception: FirebaseFirestoreException) {
-                Log.e("Exception parsing: ", "${exception.message}")
-            }
-        }
-
-        adapter?.notifyDataSetChanged()
-        recyclerView?.adapter = adapter
-    }
-
-    class TicketViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView),
-        LayoutContainer
-
-    override fun onStart() {
-        super.onStart()
-        adapter?.startListening()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        adapter?.stopListening()
     }
 }

@@ -52,6 +52,7 @@ data class EndLocation(
 }
 
 data class Ticket(
+    var ticketID: String? = null,
     var startLocation: StartLocation? = null,
     var endLocation: EndLocation? = null,
     var date: String? = null,

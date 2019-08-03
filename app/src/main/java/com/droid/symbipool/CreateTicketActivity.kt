@@ -63,7 +63,8 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
             date = dateStep.stepData.trim(),
             startLocation = startLocation?.getActual(),
             endLocation = endLocation?.getActual(),
-            genderPreference = genderStep.stepData.trim()
+            genderPreference = genderStep.stepData.trim(),
+            ticketID = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION).document().id
         )
         Log.i(javaClass.simpleName, "TicketResponse: $ticket")
 

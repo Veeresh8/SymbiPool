@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         viewPager.offscreenPageLimit = 3
 
         viewPager.adapter = adapter
+
         tabLayout.setupWithViewPager(viewPager)
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
