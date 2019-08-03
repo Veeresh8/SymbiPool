@@ -1,16 +1,23 @@
 package com.droid.symbipool
 
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.droid.symbipool.TicketUtils.addLocations
+import com.droid.symbipool.TicketUtils.allEndLocations
+import com.droid.symbipool.TicketUtils.allStartLocations
+import com.droid.symbipool.TicketUtils.removeLocations
 import com.droid.symbipool.adapters.AllTicketsAdapter
+import com.droid.symbipool.filterTicket.FilterActivity
 import com.google.android.material.chip.Chip
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -18,6 +25,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_all_tickets.*
+import java.io.Serializable
 
 
 class AllTicketsFragment : Fragment() {
@@ -26,11 +34,9 @@ class AllTicketsFragment : Fragment() {
     private var linearLayoutManager: LinearLayoutManager? = null
     private var firestore: FirebaseFirestore? = null
     private var recyclerView: RecyclerView? = null
-    private var filterLayout: ConstraintLayout? = null
+    private var tvFilter: TextView? = null
     private var cpDate: Chip? = null
 
-    private var allStartLocations: Set<String?> = HashSet()
-    private var allEndLocations: Set<String?> = HashSet()
     private val allTickets: ArrayList<Ticket> = ArrayList()
 
     companion object {
@@ -41,13 +47,23 @@ class AllTicketsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_all_tickets, container, false)
         initUI(view)
         initQuery()
+        initClicks()
         return view
+    }
+
+    private fun initClicks() {
+        tvFilter?.run {
+            this.setOnClickListener {
+                val mainActivity = activity as MainActivity
+                mainActivity.startFilterActivity()
+            }
+        }
     }
 
     private fun initUI(view: View) {
         recyclerView = view.findViewById(R.id.rvAllTickets)
         cpDate = view.findViewById(R.id.cpDate)
-        filterLayout = view.findViewById(R.id.filterLayout)
+        tvFilter = view.findViewById(R.id.tvFilter)
         linearLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
         recyclerView?.layoutManager = linearLayoutManager
         adapter = AllTicketsAdapter {
@@ -74,14 +90,12 @@ class AllTicketsFragment : Fragment() {
                         when (document.type) {
                             DocumentChange.Type.ADDED -> {
                                 Log.i(TAG, "New ticket: $ticket")
-                                allStartLocations = allStartLocations.plus(ticket.startLocation?.subLocality)
-                                allEndLocations = allEndLocations.plus(ticket.endLocation?.subLocality)
+                                addLocations(ticket)
                                 allTickets.add(ticket)
                             }
                             DocumentChange.Type.MODIFIED -> {
                                 Log.i(TAG, "Modified ticket: $ticket")
-                                allStartLocations = allStartLocations.plus(ticket.startLocation?.subLocality)
-                                allEndLocations = allEndLocations.plus(ticket.endLocation?.subLocality)
+                                addLocations(ticket)
                                 allTickets.forEachIndexed { index, currentTicket ->
                                     if (ticket.ticketID == currentTicket.ticketID) {
                                         allTickets[index] = ticket
@@ -90,8 +104,7 @@ class AllTicketsFragment : Fragment() {
                             }
                             DocumentChange.Type.REMOVED -> {
                                 Log.i(TAG, "Removed ticket: $ticket")
-                                allStartLocations = allStartLocations.minus(ticket.startLocation?.subLocality)
-                                allEndLocations = allEndLocations.minus(ticket.endLocation?.subLocality)
+                                removeLocations(ticket)
                                 allTickets.remove(ticket)
                             }
                         }
@@ -109,5 +122,9 @@ class AllTicketsFragment : Fragment() {
                     Snackbar.make(requireView(), "Found ${allTickets.size} results", Snackbar.LENGTH_LONG).show()
                 }
             }
+    }
+
+    fun filter(ticketFilter: TicketFilter?) {
+        Log.i(javaClass.simpleName, "Filter ticket: $ticketFilter")
     }
 }

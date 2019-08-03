@@ -14,7 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".FilterActivity">
+        <activity android:name=".filterTicket.FilterActivity">
         </activity>
 
         <meta-data

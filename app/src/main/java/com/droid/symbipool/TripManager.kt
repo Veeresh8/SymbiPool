@@ -2,6 +2,7 @@ package com.droid.symbipool
 
 import com.google.firebase.firestore.Exclude
 import com.google.gson.Gson
+import java.io.Serializable
 
 data class StartLocation(
     var name: String? = null,
@@ -59,3 +60,9 @@ data class Ticket(
     var time: Long? = null,
     var genderPreference: String? = null
 )
+
+data class TicketFilter(
+    var startLocation: Pair<String, String>? = null,
+    var endLocation: Pair<String, String>? = null,
+    var genderPreference: String? = null
+): Serializable

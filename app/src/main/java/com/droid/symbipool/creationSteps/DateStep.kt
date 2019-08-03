@@ -1,28 +1,26 @@
-package com.droid.symbipool.steps
+package com.droid.symbipool.creationSteps
 
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
-import com.afollestad.materialdialogs.datetime.timePicker
 import com.droid.symbipool.R
 import ernestoyaquello.com.verticalstepperform.Step
 import java.text.SimpleDateFormat
 
 
-class TimeStep(title: String) : Step<String>(title) {
+class DateStep(title: String) : Step<String>(title) {
 
-    private var timePicked: String? = null
-    private var timestamp: Long? = null
-    var timeFormat = SimpleDateFormat("hh:mm aa")
+    private var datePicked: String? = null
+    var dateFormat = SimpleDateFormat("dd-MMM-yyyy")
 
     override fun restoreStepData(data: String?) {
 
     }
 
     override fun isStepDataValid(stepData: String?): IsDataValid {
-        return if (timePicked != null) {
+        return if (datePicked != null) {
             IsDataValid(true)
         } else {
             IsDataValid(false)
@@ -34,19 +32,18 @@ class TimeStep(title: String) : Step<String>(title) {
     }
 
     override fun getStepDataAsHumanReadableString(): String {
-        return "$timePicked"
+        return "$datePicked"
     }
 
     override fun createStepContentLayout(): View {
-        val view = LayoutInflater.from(context).inflate(R.layout.step_time, null, false)
-        val tvTime = view.findViewById<TextView>(R.id.tvTime)
-        tvTime.setOnClickListener {
+        val view = LayoutInflater.from(context).inflate(R.layout.step_date, null, false)
+        val tvDate = view.findViewById<TextView>(R.id.tvDate)
+        tvDate.setOnClickListener {
             MaterialDialog(context).show {
-                timePicker(show24HoursView = false) { _, datetime ->
-                    val formattedDate = timeFormat.format(datetime.time)
-                    timePicked = formattedDate
-                    tvTime.text = timePicked
-                    timestamp = datetime.timeInMillis
+                datePicker { _, date ->
+                    val formattedDate = dateFormat.format(date.time)
+                    datePicked = formattedDate
+                    tvDate.text = datePicked
                     markAsCompleted(false)
                 }
             }
@@ -56,7 +53,7 @@ class TimeStep(title: String) : Step<String>(title) {
     }
 
     override fun getStepData(): String {
-        return "$timestamp"
+        return "$datePicked"
     }
 
     override fun onStepOpened(animated: Boolean) {

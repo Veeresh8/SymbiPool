@@ -10,9 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.droid.symbipool.steps.DateStep
-import com.droid.symbipool.steps.GenderStep
-import com.droid.symbipool.steps.TimeStep
+import com.droid.symbipool.creationSteps.DateStep
+import com.droid.symbipool.creationSteps.GenderStep
+import com.droid.symbipool.creationSteps.TimeStep
 import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.firestore.FirebaseFirestore
 import com.rtchagas.pingplacepicker.PingPlacePicker

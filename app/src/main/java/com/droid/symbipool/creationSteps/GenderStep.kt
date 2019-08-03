@@ -1,4 +1,4 @@
-package com.droid.symbipool.steps
+package com.droid.symbipool.creationSteps
 
 import android.view.LayoutInflater
 import android.view.View

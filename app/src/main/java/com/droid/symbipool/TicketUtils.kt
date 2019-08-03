@@ -4,13 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import com.droid.symbipool.steps.GenderStep
+import com.droid.symbipool.creationSteps.GenderStep
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 object TicketUtils {
 
+    var allStartLocations: Set<String> = HashSet()
+    var allEndLocations: Set<String> = HashSet()
+    var allCities: Set<String> = HashSet()
 
     fun getTimeAndDate(ticket: Ticket): String {
         val timeStringBuilder = StringBuilder()
@@ -77,6 +80,66 @@ object TicketUtils {
             context.startActivity(intent)
         } catch (exception: Exception) {
             Log.e(javaClass.simpleName, "No intent found: ${exception.message}")
+        }
+    }
+
+    fun getAllStartLocations(): List<String> {
+        return allStartLocations.toList()
+    }
+
+    fun getAllEndLocations(): List<String> {
+        return allEndLocations.toList()
+    }
+
+    fun removeLocations(ticket: Ticket) {
+        ticket.startLocation?.subLocality?.run {
+            allStartLocations = allStartLocations.minus(this)
+        }
+
+        ticket.startLocation?.locality?.run {
+            allCities = allCities.minus(this)
+        }
+
+        ticket.endLocation?.subLocality?.run {
+            allEndLocations = allEndLocations.minus(this)
+        }
+
+        ticket.endLocation?.locality?.run {
+            allCities = allCities.minus(this)
+        }
+    }
+
+    fun getStartLocationPicked(index: Int): String {
+        return allStartLocations.elementAt(index)
+    }
+
+    fun getCityPicked(index: Int): String {
+        return allCities.elementAt(index)
+    }
+
+    fun getEndLocationPicked(index: Int): String {
+        return allEndLocations.elementAt(index)
+    }
+
+    fun getAllCities(): List<String> {
+        return allCities.toList()
+    }
+
+    fun addLocations(ticket: Ticket) {
+        ticket.startLocation?.subLocality?.run {
+            allStartLocations = allStartLocations.plus(this)
+        }
+
+        ticket.startLocation?.locality?.run {
+            allCities = allCities.plus(this)
+        }
+
+        ticket.endLocation?.subLocality?.run {
+            allEndLocations = allEndLocations.plus(this)
+        }
+
+        ticket.endLocation?.locality?.run {
+            allCities = allCities.plus(this)
         }
     }
 }

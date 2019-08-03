@@ -8,12 +8,12 @@
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ems="10"
             android:textColor="@color/colorAccent"
             android:text="Select"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp" app:layout_constraintEnd_toEndOf="parent" android:id="@+id/tvGender"
+            android:layout_marginTop="16dp" app:layout_constraintEnd_toEndOf="parent" android:id="@+id/tvStartLocation"
             android:layout_marginEnd="16dp"
             android:fontFamily="sans-serif-smallcaps" android:textSize="16sp"/>
-
 </LinearLayout>

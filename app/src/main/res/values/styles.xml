@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="md_corner_radius">16dp</item>
+        <item name="md_ripple_color">@color/colorAccentRipple</item>
+        <item name="md_color_button_text">@color/colorPrimaryDark</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
