@@ -55,4 +55,5 @@
             app:lottie_speed="0.9"
             app:lottie_loop="false"
             app:lottie_fileName="loading.json"/>
+
 </LinearLayout>

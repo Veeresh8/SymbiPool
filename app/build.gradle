@@ -64,6 +64,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:20.2.0'
     implementation "com.firebaseui:firebase-ui-auth:3.0.0"
     implementation "com.firebaseui:firebase-ui-firestore:5.0.0"
+    implementation 'com.google.firebase:firebase-auth:18.1.0'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
     /*Places*/
     implementation 'com.google.android.libraries.places:places:2.0.0'
