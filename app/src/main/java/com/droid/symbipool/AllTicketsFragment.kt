@@ -227,10 +227,7 @@ class AllTicketsFragment : Fragment() {
 
             val genderPreference = this.genderPreference
 
-            Log.i(
-                javaClass.simpleName,
-                "$startLocality || $startCity -> $endLocality || $endCity -> $genderPreference"
-            )
+            Log.i(javaClass.simpleName, "$startLocality || $startCity -> $endLocality || $endCity -> $genderPreference")
 
             if (startLocality == TicketUtils.ANY_LOCATION && endLocality != TicketUtils.ANY_LOCATION) {
                 filteredList = allTickets.map { it }
@@ -315,7 +312,10 @@ class AllTicketsFragment : Fragment() {
             } else {
                 try {
                     val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", this, null))
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Regarding a ride on ${TicketUtils.getTimeAndDate(ticket)}")
+                    emailIntent.putExtra(
+                        Intent.EXTRA_SUBJECT,
+                        "Regarding a ride on ${TicketUtils.getTimeAndDate(ticket)}"
+                    )
                     emailIntent.putExtra(Intent.EXTRA_TEXT, "")
                     startActivity(Intent.createChooser(emailIntent, "Send email"))
                 } catch (exception: Exception) {

@@ -48,38 +48,42 @@ class EndStep(title: String) : Step<Pair<String, String>>(title) {
         val view = LayoutInflater.from(context).inflate(R.layout.step_filter_end_location, null, false)
         tvEndLocation = view.findViewById(R.id.tvEndLocation)
         tvEndLocation?.setOnClickListener {
-            val localityDialog = MaterialDialog(context)
-                .title(R.string.end_location)
-                .listItemsSingleChoice(
-                    items = TicketUtils.getAllEndLocations(),
-                    initialSelection = 0
-                ) { _, index, _ ->
-
-                    if (index == 0) {
-                        endLocation = Pair(TicketUtils.ANY_LOCATION, TicketUtils.ANY_LOCATION)
-                        tvEndLocation?.text = TicketUtils.ANY_LOCATION
-                        markAsCompleted(false)
-                        return@listItemsSingleChoice
-                    }
-
-                    locality = TicketUtils.getEndLocationPicked(index)
-                    showCityDialog(context)
-                }
-                .positiveButton(R.string.select)
-
-            localityDialog.show()
+           showCityDialog()
         }
         return view
     }
 
-    private fun showCityDialog(context: Context) {
+    private fun showLocalityDialog() {
+        val localityDialog = MaterialDialog(context)
+            .title(R.string.end_location)
+            .listItemsSingleChoice(
+                items = TicketUtils.getAllEndLocations(),
+                initialSelection = 0
+            ) { _, index, _ ->
+
+                if (index == 0) {
+                    endLocation = Pair(TicketUtils.ANY_LOCATION, TicketUtils.ANY_LOCATION)
+                    tvEndLocation?.text = TicketUtils.ANY_LOCATION
+                    markAsCompleted(false)
+                    return@listItemsSingleChoice
+                }
+
+                locality = TicketUtils.getEndLocationPicked(index)
+                endLocation = Pair(locality, city)
+                tvEndLocation?.text = "$locality , $city"
+                markAsCompleted(false)
+            }
+            .positiveButton(R.string.select)
+
+        localityDialog.show()
+    }
+
+    private fun showCityDialog() {
         val cityDialog = MaterialDialog(context)
             .title(R.string.city)
             .listItemsSingleChoice(items = TicketUtils.getAllCities(), initialSelection = 0) { _, index, _ ->
                 city = TicketUtils.getCityPicked(index)
-                endLocation = Pair(locality, city)
-                tvEndLocation?.text = "$locality , $city"
-                markAsCompleted(false)
+                showLocalityDialog()
             }
             .positiveButton(R.string.select)
         cityDialog.show()

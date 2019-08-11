@@ -44,39 +44,44 @@ class StartStep(title: String) : Step<Pair<String, String>>(title) {
         val view = LayoutInflater.from(context).inflate(R.layout.step_filter_start_location, null, false)
         tvStartLocation = view.findViewById(R.id.tvStartLocation)
         tvStartLocation?.setOnClickListener {
-            val localityDialog = MaterialDialog(context)
-                .title(R.string.start_location)
-                .listItemsSingleChoice(
-                    items = TicketUtils.getAllStartLocations(),
-                    initialSelection = 0
-                ) { _, index, _ ->
-
-
-                    if (index == 0) {
-                        startLocation = Pair(TicketUtils.ANY_LOCATION, TicketUtils.ANY_LOCATION)
-                        tvStartLocation?.text = TicketUtils.ANY_LOCATION
-                        markAsCompleted(false)
-                        return@listItemsSingleChoice
-                    }
-
-                    locality = TicketUtils.getStartLocationPicked(index)
-                    showCityDialog(context)
-                }
-                .positiveButton(R.string.select)
-
-            localityDialog.show()
+            showCityDialog()
         }
         return view
     }
 
-    private fun showCityDialog(context: Context) {
+    private fun showLocalityDialog() {
+        val localityDialog = MaterialDialog(context)
+            .title(R.string.start_location)
+            .listItemsSingleChoice(
+                items = TicketUtils.getAllStartLocations(),
+                initialSelection = 0
+            ) { _, index, _ ->
+
+
+                if (index == 0) {
+                    startLocation = Pair(TicketUtils.ANY_LOCATION, TicketUtils.ANY_LOCATION)
+                    tvStartLocation?.text = TicketUtils.ANY_LOCATION
+                    markAsCompleted(false)
+                    return@listItemsSingleChoice
+                }
+
+                locality = TicketUtils.getStartLocationPicked(index)
+                startLocation = Pair(locality, city)
+                tvStartLocation?.text = "$locality , $city"
+                markAsCompleted(false)
+
+            }
+            .positiveButton(R.string.select)
+
+        localityDialog.show()
+    }
+
+    private fun showCityDialog() {
         val cityDialog = MaterialDialog(context)
             .title(R.string.city)
             .listItemsSingleChoice(items = TicketUtils.getAllCities(), initialSelection = 0) { _, index, _ ->
                 city = TicketUtils.getCityPicked(index)
-                startLocation = Pair(locality, city)
-                tvStartLocation?.text = "$locality , $city"
-                markAsCompleted(false)
+                showLocalityDialog()
             }
             .positiveButton(R.string.select)
         cityDialog.show()
