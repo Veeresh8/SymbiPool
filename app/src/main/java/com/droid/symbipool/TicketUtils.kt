@@ -178,6 +178,14 @@ object TicketUtils {
         return ticket.genderPreference == ticketFilter.genderPreference
     }
 
+    fun startCityCheck(ticket: Ticket, ticketFilter: TicketFilter): Boolean {
+        return ticket.startLocation?.locality == ticketFilter.startLocation?.second
+    }
+
+    fun endCityCheck(ticket: Ticket, ticketFilter: TicketFilter): Boolean {
+        return ticket.endLocation?.locality == ticketFilter.endLocation?.second
+    }
+
     fun startLocalityCheck(ticket: Ticket, ticketFilter: TicketFilter): Boolean {
         return ticket.startLocation?.subLocality == ticketFilter.startLocation?.first &&
                 ticket.startLocation?.locality == ticketFilter.startLocation?.second

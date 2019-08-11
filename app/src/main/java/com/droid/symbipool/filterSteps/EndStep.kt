@@ -48,7 +48,7 @@ class EndStep(title: String) : Step<Pair<String, String>>(title) {
         val view = LayoutInflater.from(context).inflate(R.layout.step_filter_end_location, null, false)
         tvEndLocation = view.findViewById(R.id.tvEndLocation)
         tvEndLocation?.setOnClickListener {
-           showCityDialog()
+            showCityDialog()
         }
         return view
     }
@@ -60,21 +60,18 @@ class EndStep(title: String) : Step<Pair<String, String>>(title) {
                 items = TicketUtils.getAllEndLocations(),
                 initialSelection = 0
             ) { _, index, _ ->
-
                 if (index == 0) {
-                    endLocation = Pair(TicketUtils.ANY_LOCATION, TicketUtils.ANY_LOCATION)
-                    tvEndLocation?.text = TicketUtils.ANY_LOCATION
+                    endLocation = Pair(TicketUtils.ANY_LOCATION, city)
+                    tvEndLocation?.text = "ANY AREA , $city"
                     markAsCompleted(false)
                     return@listItemsSingleChoice
                 }
-
                 locality = TicketUtils.getEndLocationPicked(index)
                 endLocation = Pair(locality, city)
                 tvEndLocation?.text = "$locality , $city"
                 markAsCompleted(false)
             }
             .positiveButton(R.string.select)
-
         localityDialog.show()
     }
 

@@ -3,6 +3,7 @@ package com.droid.symbipool
 import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -18,6 +19,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.droid.symbipool.TicketUtils.addLocations
@@ -25,10 +27,12 @@ import com.droid.symbipool.TicketUtils.allEndLocations
 import com.droid.symbipool.TicketUtils.allStartLocations
 import com.droid.symbipool.TicketUtils.allTickets
 import com.droid.symbipool.TicketUtils.clearAllLists
+import com.droid.symbipool.TicketUtils.endCityCheck
 import com.droid.symbipool.TicketUtils.endLocalityCheck
 import com.droid.symbipool.TicketUtils.filteredList
 import com.droid.symbipool.TicketUtils.genderCheck
 import com.droid.symbipool.TicketUtils.removeLocations
+import com.droid.symbipool.TicketUtils.startCityCheck
 import com.droid.symbipool.TicketUtils.startLocalityCheck
 import com.droid.symbipool.adapters.AllTicketsAdapter
 import com.droid.symbipool.creationSteps.DateStep
@@ -51,6 +55,7 @@ class AllTicketsFragment : Fragment() {
     private var firestore: FirebaseFirestore? = null
     private var recyclerView: RecyclerView? = null
     private var tvEmpty: TextView? = null
+    private var swipeContainer: SwipeRefreshLayout? = null
     private var progressBar: ProgressBar? = null
     private var rootLayout: RelativeLayout? = null
     private var cpResetFilter: Chip? = null
@@ -149,6 +154,7 @@ class AllTicketsFragment : Fragment() {
         progressBar = view.findViewById(R.id.progressBar)
         rootLayout = view.findViewById(R.id.rootLayout)
         tvEmpty = view.findViewById(R.id.tvEmpty)
+        swipeContainer = view.findViewById(R.id.swipeContainer)
         context?.let { recyclerView?.withLinearLayout(it) }
         adapter = AllTicketsAdapter { ticket ->
             launchContact(ticket)
@@ -156,6 +162,20 @@ class AllTicketsFragment : Fragment() {
         recyclerView?.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
         cpDate?.text = DatabaseUtils.getCurrentDate()
+
+        swipeContainer?.setColorSchemeColors(Color.BLUE, Color.BLUE, Color.BLUE)
+
+        swipeContainer?.setOnRefreshListener {
+            lastPickedDate?.run {
+                cpResetFilter?.run { this.gone() }
+                listener?.remove()
+                cpDate?.text = this
+                showProgress(true)
+                clearAllLists()
+                initQuery(this)
+                showProgress(false)
+            }
+        }
     }
 
     private fun initQuery(date: String) {
@@ -202,6 +222,8 @@ class AllTicketsFragment : Fragment() {
 
                     adapter?.submitList(allTickets.map { it })
 
+                    swipeContainer?.isRefreshing = false
+
                     Log.i(javaClass.simpleName, "Start locations: $allStartLocations")
                     Log.i(javaClass.simpleName, "End locations: $allEndLocations")
 
@@ -229,29 +251,34 @@ class AllTicketsFragment : Fragment() {
 
             Log.i(javaClass.simpleName, "$startLocality || $startCity -> $endLocality || $endCity -> $genderPreference")
 
+            filteredList = allTickets.map { it }
+                .filter { startCityCheck(it, ticketFilter) && endCityCheck(it, ticketFilter) }
+
+            Log.i(javaClass.simpleName, "(CITY) Filter ticket ${filteredList.size}: $filteredList")
+
             if (startLocality == TicketUtils.ANY_LOCATION && endLocality != TicketUtils.ANY_LOCATION) {
-                filteredList = allTickets.map { it }
+                filteredList = filteredList
                     .filter { endLocalityCheck(it, ticketFilter) && genderCheck(it, ticketFilter) }
                 Log.i(javaClass.simpleName, "(END LOCATION) Filter ticket ${filteredList.size}: $filteredList")
                 return@run
             }
 
             if (startLocality != TicketUtils.ANY_LOCATION && endLocality == TicketUtils.ANY_LOCATION) {
-                filteredList = allTickets.map { it }
+                filteredList = filteredList
                     .filter { startLocalityCheck(it, ticketFilter) && genderCheck(it, ticketFilter) }
                 Log.i(javaClass.simpleName, "(START LOCATION) Filter ticket ${filteredList.size}: $filteredList")
                 return@run
             }
 
             if (startLocality == TicketUtils.ANY_LOCATION && endLocality == TicketUtils.ANY_LOCATION) {
-                filteredList = allTickets.map { it }
+                filteredList = filteredList
                     .filter { genderCheck(it, ticketFilter) }
                 Log.i(javaClass.simpleName, "(GENDER) Filter ticket ${filteredList.size}: $filteredList")
                 return@run
             }
 
             if (startLocality != TicketUtils.ANY_LOCATION && endLocality != TicketUtils.ANY_LOCATION) {
-                filteredList = allTickets.map { it }
+                filteredList = filteredList
                     .filter {
                         startLocalityCheck(it, ticketFilter) &&
                                 endLocalityCheck(it, ticketFilter) &&
@@ -265,7 +292,7 @@ class AllTicketsFragment : Fragment() {
         adapter?.submitList(filteredList)
 
         cpResetFilter?.run {
-            this.visibility = View.VISIBLE
+            this.visible()
         }
 
         showProgress(false)

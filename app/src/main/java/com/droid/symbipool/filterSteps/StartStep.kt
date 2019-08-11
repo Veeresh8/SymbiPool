@@ -56,23 +56,18 @@ class StartStep(title: String) : Step<Pair<String, String>>(title) {
                 items = TicketUtils.getAllStartLocations(),
                 initialSelection = 0
             ) { _, index, _ ->
-
-
                 if (index == 0) {
-                    startLocation = Pair(TicketUtils.ANY_LOCATION, TicketUtils.ANY_LOCATION)
-                    tvStartLocation?.text = TicketUtils.ANY_LOCATION
+                    startLocation = Pair(TicketUtils.ANY_LOCATION, city)
+                    tvStartLocation?.text = "ANY AREA , $city"
                     markAsCompleted(false)
                     return@listItemsSingleChoice
                 }
-
                 locality = TicketUtils.getStartLocationPicked(index)
                 startLocation = Pair(locality, city)
                 tvStartLocation?.text = "$locality , $city"
                 markAsCompleted(false)
-
             }
             .positiveButton(R.string.select)
-
         localityDialog.show()
     }
 
