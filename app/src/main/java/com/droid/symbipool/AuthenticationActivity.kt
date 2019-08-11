@@ -1,32 +1,51 @@
 package com.droid.symbipool
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
+import android.util.Log
 import android.widget.Button
 import android.widget.ProgressBar
-import androidx.appcompat.widget.SwitchCompat
-import androidx.core.widget.addTextChangedListener
+import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_authentication.*
+
 
 class AuthenticationActivity : AppCompatActivity() {
 
     private var mBottomSheetDialog: BottomSheetDialog? = null
+    private var emailList: ArrayList<String> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
+        initEmailList()
         lottieAnimation.playAnimation()
         clickListeners()
+    }
+
+    private fun initEmailList() {
+        FirebaseFirestore.getInstance().collection(DatabaseUtils.EMAILS_COLLECTION)
+            .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                if (firebaseFirestoreException != null) {
+                    Log.e(javaClass.simpleName, "Query error: ${firebaseFirestoreException.message}")
+                    return@addSnapshotListener
+                }
+
+                querySnapshot?.documents?.run {
+                    if (this.isNotEmpty()) {
+                        emailList = this[0]["email"] as ArrayList<String>
+                        Log.d(javaClass.simpleName, emailList.toString())
+                    }
+                }
+            }
     }
 
     private fun clickListeners() {
@@ -45,6 +64,11 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun openBS(authType: AuthType) {
+        if (!isConnectedToNetwork(this)) {
+            Snackbar.make(rootLayout, "Please verify your network connection to proceed", Snackbar.LENGTH_LONG).show()
+            return
+        }
+
         mBottomSheetDialog = BottomSheetDialog(this)
         mBottomSheetDialog?.window?.setDimAmount(0.9F)
         val sheetView = layoutInflater.inflate(
@@ -110,8 +134,8 @@ class AuthenticationActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            progressBar.visibility = View.VISIBLE
-            btnNext.visibility = View.GONE
+            progressBar.visible()
+            btnNext.gone()
 
             if (authType == AuthType.SIGN_UP) {
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
@@ -165,7 +189,7 @@ class AuthenticationActivity : AppCompatActivity() {
         MaterialDialog(this@AuthenticationActivity).show {
             title(R.string.sign_up_success_title)
             cancelable(false)
-            message(text = "Please login after verifying your email. \n \nVerification link has been sent to \n${FirebaseAuth.getInstance().currentUser?.email}")
+            message(text = "Please login after verifying your email. \n \nVerification link has been sent to ${FirebaseAuth.getInstance().currentUser?.email}")
             positiveButton(R.string.try_again) {
                 dismiss()
             }
@@ -174,6 +198,19 @@ class AuthenticationActivity : AppCompatActivity() {
 
     private fun isEmailValid(email: CharSequence): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                //&& isSymbosisEmail(email)
+    }
+
+    private fun isSymbosisEmail(userEmail: CharSequence): Boolean {
+        if (emailList.isEmpty())
+            return true
+
+        val modifiedEmail = userEmail.substring(userEmail.lastIndexOf("@") + 1)
+        emailList.forEach { email ->
+            if (modifiedEmail == (email))
+                return true
+        }
+        return false
     }
 
     override fun onResume() {

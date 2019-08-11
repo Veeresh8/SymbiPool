@@ -5,6 +5,7 @@ import java.util.*
 
 object DatabaseUtils {
     const val TICKET_COLLECTION = "tickets"
+    const val EMAILS_COLLECTION = "emails"
     const val TIME = "time"
     const val DATE = "date"
     var dateFormat = SimpleDateFormat("dd-MMM-yyyy")

@@ -41,7 +41,6 @@ class AllTicketsFragment : Fragment() {
 
     private var listener: ListenerRegistration? = null
     private var adapter: AllTicketsAdapter? = null
-    private var linearLayoutManager: LinearLayoutManager? = null
     private var firestore: FirebaseFirestore? = null
     private var recyclerView: RecyclerView? = null
     private var tvEmpty: TextView? = null
@@ -143,8 +142,7 @@ class AllTicketsFragment : Fragment() {
         progressBar = view.findViewById(R.id.progressBar)
         rootLayout = view.findViewById(R.id.rootLayout)
         tvEmpty = view.findViewById(R.id.tvEmpty)
-        linearLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-        recyclerView?.layoutManager = linearLayoutManager
+        context?.let { recyclerView?.withLinearLayout(it) }
         adapter = AllTicketsAdapter {
             Snackbar.make(requireView(), "${it.startLocation?.subLocality}", Snackbar.LENGTH_LONG).show()
         }
