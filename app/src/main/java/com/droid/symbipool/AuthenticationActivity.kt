@@ -40,9 +40,11 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
 
                 querySnapshot?.documents?.run {
-                    if (this.isNotEmpty()) {
+                    if (this.isNullOrEmpty()) {
+                        return@addSnapshotListener
+                    } else {
                         emailList = this[0]["email"] as ArrayList<String>
-                        Log.d(javaClass.simpleName, emailList.toString())
+                        Log.d(javaClass.simpleName, "Emails: $emailList")
                     }
                 }
             }
@@ -198,11 +200,11 @@ class AuthenticationActivity : AppCompatActivity() {
 
     private fun isEmailValid(email: CharSequence): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-                //&& isSymbosisEmail(email)
+        //&& isSymbosisEmail(email)
     }
 
     private fun isSymbosisEmail(userEmail: CharSequence): Boolean {
-        if (emailList.isEmpty())
+        if (emailList.isNullOrEmpty())
             return true
 
         val modifiedEmail = userEmail.substring(userEmail.lastIndexOf("@") + 1)

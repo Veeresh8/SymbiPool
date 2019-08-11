@@ -11,15 +11,20 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
+import com.droid.symbipool.creationSteps.ContactStep
 import com.droid.symbipool.creationSteps.DateStep
 import com.droid.symbipool.creationSteps.GenderStep
 import com.droid.symbipool.creationSteps.TimeStep
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.rtchagas.pingplacepicker.PingPlacePicker
 import ernestoyaquello.com.verticalstepperform.Step
 import ernestoyaquello.com.verticalstepperform.listener.StepperFormListener
+import kotlinx.android.synthetic.main.activity_authentication.*
 import kotlinx.android.synthetic.main.activity_create_ticket.*
+import kotlinx.android.synthetic.main.activity_create_ticket.lottieAnimation
+import kotlinx.android.synthetic.main.activity_create_ticket.rootLayout
 import java.util.*
 
 
@@ -28,6 +33,7 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
     private lateinit var timeStep: TimeStep
     private lateinit var dateStep: DateStep
     private lateinit var genderStep: GenderStep
+    private lateinit var contactStep: ContactStep
     private lateinit var endLocationStep: LocationStep
     private lateinit var startLocationStep: LocationStep
     private val REQUEST_PLACE_PICKER: Int = 1337
@@ -51,11 +57,14 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
     private fun initStepperForm() {
         val stepTitles = resources.getStringArray(R.array.steps_titles)
         dateStep = DateStep(stepTitles[0])
+        contactStep = ContactStep(stepTitles[0])
         timeStep = TimeStep(stepTitles[1])
         startLocationStep = LocationStep(stepTitles[2], "")
         endLocationStep = LocationStep(stepTitles[3], null)
         genderStep = GenderStep(stepTitles[4])
-        stepperForm?.setup(this, dateStep, timeStep, startLocationStep, endLocationStep, genderStep)?.init()
+        contactStep = ContactStep(stepTitles[5])
+        stepperForm?.setup(this, dateStep, timeStep, startLocationStep, endLocationStep, genderStep, contactStep)
+            ?.init()
     }
 
     override fun onCompletedForm() {
@@ -65,20 +74,24 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
             startLocation = startLocation?.getActual(),
             endLocation = endLocation?.getActual(),
             genderPreference = genderStep.stepData.trim(),
-            ticketID = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION).document().id
+            ticketID = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION).document().id,
+            contact = contactStep.stepData.trim()
         )
         Log.i(javaClass.simpleName, "TicketResponse: $ticket")
 
+        stepperForm.gone()
+        lottieAnimation.visible()
         FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION).add(ticket)
             .addOnSuccessListener {
                 Log.d(javaClass.simpleName, "Saved ticket: ${it.id}")
+
             }
             .addOnFailureListener {
                 Log.e(javaClass.simpleName, "Error saving ticket: ${it.message}")
+                Snackbar.make(rootLayout, "Failed to create ticket", Snackbar.LENGTH_LONG).show()
+                stepperForm.visible()
+                lottieAnimation.gone()
             }
-
-        stepperForm.visibility = View.GONE
-        lottieAnimation.visibility = View.VISIBLE
 
         lottieAnimation.playAnimation()
         lottieAnimation.addAnimatorListener(object : Animator.AnimatorListener {
@@ -95,16 +108,15 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
             }
 
             override fun onAnimationStart(p0: Animator?) {
-
+                Snackbar.make(rootLayout, "Created ticket successfully", Snackbar.LENGTH_LONG).show()
             }
-
         })
+
     }
 
     override fun onCancelledForm() {
         finish()
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

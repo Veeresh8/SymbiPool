@@ -28,6 +28,7 @@
         <item>Start Address</item>
         <item>Destination Address</item>
         <item>Gender Preference</item>
+        <item>Contact Info</item>
     </string-array>
 
     <string-array name="steps_titles_filter">

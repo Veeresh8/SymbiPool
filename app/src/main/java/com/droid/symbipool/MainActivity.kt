@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
 
     private var allTicketsFragment = AllTicketsFragment.newInstance()
     private var myTicketsFragment = MyTicketsFragment.newInstance()
-    private var requestsFragment = RequestsFragment.newInstance()
 
     companion object {
         var INTENT_CODE = 1337
@@ -46,9 +45,8 @@ class MainActivity : AppCompatActivity() {
 
         adapter?.allFragments?.add(allTicketsFragment)
         adapter?.allFragments?.add(myTicketsFragment)
-        adapter?.allFragments?.add(requestsFragment)
 
-        viewPager.offscreenPageLimit = 3
+        viewPager.offscreenPageLimit = 2
 
         viewPager.adapter = adapter
 

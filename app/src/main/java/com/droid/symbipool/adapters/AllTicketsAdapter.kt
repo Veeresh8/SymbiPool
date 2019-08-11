@@ -51,7 +51,8 @@ class AllTicketsAdapter(private val clickListener: (Ticket) -> Unit) : androidx.
                     }
                 }
             }
-            
+
+            itemView.btnContact.setOnClickListener { clickListener(ticket) }
             itemView.setOnClickListener { clickListener(ticket) }
         }
     }

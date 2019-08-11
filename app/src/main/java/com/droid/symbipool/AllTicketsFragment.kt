@@ -1,9 +1,12 @@
 package com.droid.symbipool
 
+import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,12 +33,15 @@ import com.droid.symbipool.TicketUtils.startLocalityCheck
 import com.droid.symbipool.adapters.AllTicketsAdapter
 import com.droid.symbipool.creationSteps.DateStep
 import com.droid.symbipool.filterTicket.FilterActivity
+import com.github.florent37.runtimepermission.kotlin.askPermission
+import com.github.florent37.runtimepermission.kotlin.coroutines.experimental.askPermission
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import java.lang.Exception
 
 
 class AllTicketsFragment : Fragment() {
@@ -143,8 +150,8 @@ class AllTicketsFragment : Fragment() {
         rootLayout = view.findViewById(R.id.rootLayout)
         tvEmpty = view.findViewById(R.id.tvEmpty)
         context?.let { recyclerView?.withLinearLayout(it) }
-        adapter = AllTicketsAdapter {
-            Snackbar.make(requireView(), "${it.startLocation?.subLocality}", Snackbar.LENGTH_LONG).show()
+        adapter = AllTicketsAdapter { ticket ->
+            launchContact(ticket)
         }
         recyclerView?.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
@@ -286,5 +293,45 @@ class AllTicketsFragment : Fragment() {
                 showEmptyLayout(list)
             }
         }, 1500)
+    }
+
+    private fun launchContact(ticket: Ticket) {
+        ticket.contact?.run {
+            if (this.isDigitsOnly()) {
+                askPermission(Manifest.permission.CALL_PHONE) {
+                    activity?.let { it1 -> makeCall(it1, this) }
+                }.onDeclined {
+                    showSnack("Grant permission to place a call")
+                }.runtimePermission.onForeverDenied {
+                    startActivity(
+                        Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                        )
+                    )
+                }.onAccepted {
+                    activity?.let { it1 -> makeCall(it1, this) }
+                }
+            } else {
+                try {
+                    val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", this, null))
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Regarding a ride on ${TicketUtils.getTimeAndDate(ticket)}")
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, "")
+                    startActivity(Intent.createChooser(emailIntent, "Send email"))
+                } catch (exception: Exception) {
+                    showSnack("No email clients found, please install one")
+                }
+            }
+        }
+    }
+
+    private fun showSnack(message: String) {
+        rootLayout?.run {
+            Snackbar.make(
+                this,
+                message,
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
     }
 }

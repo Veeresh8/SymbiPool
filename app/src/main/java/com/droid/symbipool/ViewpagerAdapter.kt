@@ -16,9 +16,6 @@ class ViewpagerAdapter(fragmentManager: FragmentManager) : FragmentPagerAdapter(
             1 -> {
                 allFragments[1]
             }
-            2 -> {
-                allFragments[2]
-            }
             else -> allFragments[0]
         }
     }
@@ -26,9 +23,8 @@ class ViewpagerAdapter(fragmentManager: FragmentManager) : FragmentPagerAdapter(
     override fun getPageTitle(position: Int): CharSequence = when (position) {
         0 -> "All Tickets"
         1 -> "My Tickets"
-        2 -> "Requests"
         else -> ""
     }
 
-    override fun getCount(): Int = 3
+    override fun getCount(): Int = 2
 }

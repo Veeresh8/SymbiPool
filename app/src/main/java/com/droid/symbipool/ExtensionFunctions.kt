@@ -2,13 +2,16 @@ package com.droid.symbipool
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -50,3 +53,15 @@ fun isConnectedToNetwork(context: Context): Boolean {
     val activeNetworkInfo = connectivityManager.activeNetworkInfo as NetworkInfo
     return activeNetworkInfo.isConnected
 }
+
+fun makeCall(context: Context, number: String): Boolean {
+    return try {
+        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$number"))
+        context.startActivity(intent)
+        true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
+    }
+}
+

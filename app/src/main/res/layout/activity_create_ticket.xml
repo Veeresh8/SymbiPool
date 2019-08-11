@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:lottie_autoPlay="true"
-            app:lottie_speed="0.9"
+            app:lottie_speed="0.6"
             app:lottie_loop="false"
             app:lottie_fileName="loading.json"/>
 
