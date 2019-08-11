@@ -1,10 +1,13 @@
 package com.droid.symbipool
 
+import android.Manifest
 import android.animation.Animator
 import android.app.Activity
 import android.content.Intent
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +18,7 @@ import com.droid.symbipool.creationSteps.ContactStep
 import com.droid.symbipool.creationSteps.DateStep
 import com.droid.symbipool.creationSteps.GenderStep
 import com.droid.symbipool.creationSteps.TimeStep
+import com.github.florent37.runtimepermission.kotlin.askPermission
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
@@ -135,18 +139,22 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
         val result = StringBuilder()
         try {
             val geoCoder = Geocoder(this, Locale.getDefault())
-            val addresses = latitude?.let { longitude?.let { it1 -> geoCoder.getFromLocation(it, it1, 1) } }
+            val addresses = latitude?.let { longitude?.let { it1 -> geoCoder.getFromLocation(it, it1, 10) } }
             addresses?.run {
                 if (this.size > 0) {
                     val address = addresses[0]
 
                     if (address.subLocality == null || address.locality == null) {
-                        MaterialDialog(this@CreateTicketActivity).show {
-                            title(R.string.error_area_not_found_title)
-                            cancelable(false)
-                            message(R.string.error_area_not_found_message)
-                            positiveButton(R.string.got_it) {
-                                showPlacePicker()
+                        address.subLocality = TicketUtils.searchForSubLocality(addresses)
+                        address.locality = TicketUtils.searchForLocality(addresses)
+                        if (address.subLocality == null || address.locality == null) {
+                            MaterialDialog(this@CreateTicketActivity).show {
+                                title(R.string.error_area_not_found_title)
+                                cancelable(false)
+                                message(R.string.error_area_not_found_message)
+                                positiveButton(R.string.got_it) {
+                                    showPlacePicker()
+                                }
                             }
                         }
                     }

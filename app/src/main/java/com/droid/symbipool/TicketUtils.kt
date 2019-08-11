@@ -2,6 +2,7 @@ package com.droid.symbipool
 
 import android.content.Context
 import android.content.Intent
+import android.location.Address
 import android.net.Uri
 import android.util.Log
 import com.droid.symbipool.creationSteps.GenderStep
@@ -189,5 +190,21 @@ object TicketUtils {
     fun startLocalityCheck(ticket: Ticket, ticketFilter: TicketFilter): Boolean {
         return ticket.startLocation?.subLocality == ticketFilter.startLocation?.first &&
                 ticket.startLocation?.locality == ticketFilter.startLocation?.second
+    }
+
+    fun searchForSubLocality(addresses: List<Address>): String? {
+        addresses.forEach {address ->
+            if (address.subLocality != null)
+                return address.subLocality
+        }
+        return null
+    }
+
+    fun searchForLocality(addresses: List<Address>): String? {
+        addresses.forEach {address ->
+            if (address.locality != null)
+                return address.locality
+        }
+        return null
     }
 }

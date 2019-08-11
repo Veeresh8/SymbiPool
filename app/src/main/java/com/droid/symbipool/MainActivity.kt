@@ -1,11 +1,18 @@
 package com.droid.symbipool
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.droid.symbipool.filterTicket.FilterActivity
+import com.github.florent37.runtimepermission.kotlin.askPermission
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -29,9 +36,44 @@ class MainActivity : AppCompatActivity() {
         initClickListeners()
     }
 
+
+    private fun initPermissions() {
+        askPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION) {
+        }.onDeclined {
+            askPermissionsAgain()
+        }.runtimePermission.onForeverDenied {
+            startActivity(
+                Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                )
+            )
+        }.onAccepted {
+            startActivity(Intent(this@MainActivity, CreateTicketActivity::class.java))
+        }
+    }
+
+    private fun askPermissionsAgain() {
+        val snackBar = Snackbar.make(main_content, "Location permission needed to continue", Snackbar.LENGTH_LONG)
+        snackBar.setAction("Grant") {
+            initPermissions()
+        }
+        snackBar.setActionTextColor(resources.getColor(R.color.colorAccent)).show()
+    }
+
+    private fun hasGrantedPermissions(): Boolean {
+        val fineLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarseLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        return fineLocation == PackageManager.PERMISSION_GRANTED && coarseLocation == PackageManager.PERMISSION_GRANTED
+    }
+
     private fun initClickListeners() {
         fabCreateTicket.setOnClickListener {
-            startActivity(Intent(this@MainActivity, CreateTicketActivity::class.java))
+            if (!hasGrantedPermissions()) {
+                initPermissions()
+            } else {
+                startActivity(Intent(this@MainActivity, CreateTicketActivity::class.java))
+            }
         }
     }
 
