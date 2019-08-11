@@ -200,6 +200,9 @@ class AuthenticationActivity : AppCompatActivity() {
 
     private fun isEmailValid(email: CharSequence): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
+
+        //TODO Uncheck email
         //&& isSymbosisEmail(email)
     }
 
