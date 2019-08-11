@@ -7,6 +7,8 @@
     <string name="city">City</string>
     <string name="end_location">Destination Location</string>
     <string name="select">Select</string>
+    <string name="delete">Delete</string>
+    <string name="delete_message">This will remove the ticket from our servers</string>
     <string name="sign_up_success_title">Email verification link sent</string>
     <string name="auth_fail_title">Failed to sign up</string>
     <string name="auth_fail_message">This should not have happened, please try again!</string>

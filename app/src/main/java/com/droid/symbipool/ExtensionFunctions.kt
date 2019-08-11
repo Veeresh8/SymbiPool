@@ -16,12 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 fun Activity.hideSoftKeyboard() {
-    if (currentFocus != null) {
-        val inputMethodManager = getSystemService(
-            Context
-                .INPUT_METHOD_SERVICE
-        ) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+    currentFocus?.run {
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
     }
 }
 
@@ -33,18 +30,15 @@ fun View.visible() {
     this.visibility = View.VISIBLE
 }
 
+fun View.invisible() {
+    this.visibility = View.INVISIBLE
+}
+
 fun View.gone() {
     this.visibility = View.GONE
 }
 
 fun RecyclerView.withLinearLayout(context: Context) {
-
-    //Animation
-    val resId = R.anim.layout_animation_fall_down
-    val animation = AnimationUtils.loadLayoutAnimation(context, resId)
-    this.layoutAnimation = animation
-
-    //Layout manager
     this.layoutManager = LinearLayoutManager(context)
 }
 

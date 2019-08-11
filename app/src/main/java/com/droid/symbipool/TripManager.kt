@@ -59,7 +59,8 @@ data class Ticket(
     var date: String? = null,
     var time: Long? = null,
     var genderPreference: String? = null,
-    var contact: String? = null
+    var contact: String? = null,
+    var creator: String? = null
 )
 
 data class TicketFilter(
@@ -67,3 +68,7 @@ data class TicketFilter(
     var endLocation: Pair<String, String>? = null,
     var genderPreference: String? = null
 ) : Serializable
+
+data class TicketEvent (
+    var tickets: List<Ticket>? = null
+)

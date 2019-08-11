@@ -6,6 +6,7 @@ import android.location.Address
 import android.net.Uri
 import android.util.Log
 import com.droid.symbipool.creationSteps.GenderStep
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -20,6 +21,7 @@ object TicketUtils {
 
 
     var filteredList: List<Ticket> = ArrayList()
+    var userCreatedList: List<Ticket> = ArrayList()
     var allTickets: ArrayList<Ticket> = ArrayList()
 
     const val ANY_LOCATION = "All"
@@ -31,6 +33,13 @@ object TicketUtils {
         allCities = HashSet()
         allEndLocations = HashSet()
         allStartLocations = HashSet()
+    }
+
+    fun getUserCreatedTickets(): List<Ticket> {
+        userCreatedList = allTickets.map { it }
+            .filter { ticket -> ticket.creator == FirebaseAuth.getInstance().currentUser?.email }
+        Log.i(javaClass.simpleName, "User lists: ${userCreatedList.size}")
+        return userCreatedList
     }
 
     fun getTimeAndDate(ticket: Ticket): String {
@@ -193,7 +202,7 @@ object TicketUtils {
     }
 
     fun searchForSubLocality(addresses: List<Address>): String? {
-        addresses.forEach {address ->
+        addresses.forEach { address ->
             if (address.subLocality != null)
                 return address.subLocality
         }
@@ -201,7 +210,7 @@ object TicketUtils {
     }
 
     fun searchForLocality(addresses: List<Address>): String? {
-        addresses.forEach {address ->
+        addresses.forEach { address ->
             if (address.locality != null)
                 return address.locality
         }

@@ -8,6 +8,7 @@ object DatabaseUtils {
     const val EMAILS_COLLECTION = "emails"
     const val TIME = "time"
     const val DATE = "date"
+    const val TICKET_ID = "ticketID"
     var dateFormat = SimpleDateFormat("dd-MMM-yyyy")
 
     fun getCurrentDate(): String {

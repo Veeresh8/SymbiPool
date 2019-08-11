@@ -21,6 +21,7 @@ import com.droid.symbipool.creationSteps.TimeStep
 import com.github.florent37.runtimepermission.kotlin.askPermission
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.rtchagas.pingplacepicker.PingPlacePicker
 import ernestoyaquello.com.verticalstepperform.Step
@@ -72,30 +73,37 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
     }
 
     override fun onCompletedForm() {
+
+        hideSoftKeyboard()
+
+        val collection = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION).document()
+
         val ticket = Ticket(
             time = timeStep.stepData.toLong(),
             date = dateStep.stepData.trim(),
             startLocation = startLocation?.getActual(),
             endLocation = endLocation?.getActual(),
             genderPreference = genderStep.stepData.trim(),
-            ticketID = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION).document().id,
-            contact = contactStep.stepData.trim()
+            ticketID = collection.id,
+            contact = contactStep.stepData.trim(),
+            creator = FirebaseAuth.getInstance().currentUser?.email
         )
+
         Log.i(javaClass.simpleName, "TicketResponse: $ticket")
 
         stepperForm.gone()
         lottieAnimation.visible()
-        FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION).add(ticket)
-            .addOnSuccessListener {
-                Log.d(javaClass.simpleName, "Saved ticket: ${it.id}")
 
-            }
-            .addOnFailureListener {
-                Log.e(javaClass.simpleName, "Error saving ticket: ${it.message}")
+        collection.set(ticket).addOnCompleteListener {
+            if (it.isSuccessful) {
+                Log.d(javaClass.simpleName, "Saved ticket: $it")
+            } else {
+                Log.e(javaClass.simpleName, "Error saving ticket: ${it.exception?.message}")
                 Snackbar.make(rootLayout, "Failed to create ticket", Snackbar.LENGTH_LONG).show()
                 stepperForm.visible()
                 lottieAnimation.gone()
             }
+        }
 
         lottieAnimation.playAnimation()
         lottieAnimation.addAnimatorListener(object : Animator.AnimatorListener {

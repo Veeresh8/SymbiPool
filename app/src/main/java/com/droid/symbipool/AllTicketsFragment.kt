@@ -17,7 +17,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.afollestad.materialdialogs.MaterialDialog
@@ -36,16 +35,14 @@ import com.droid.symbipool.TicketUtils.startCityCheck
 import com.droid.symbipool.TicketUtils.startLocalityCheck
 import com.droid.symbipool.adapters.AllTicketsAdapter
 import com.droid.symbipool.creationSteps.DateStep
-import com.droid.symbipool.filterTicket.FilterActivity
 import com.github.florent37.runtimepermission.kotlin.askPermission
-import com.github.florent37.runtimepermission.kotlin.coroutines.experimental.askPermission
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
-import java.lang.Exception
+import org.greenrobot.eventbus.EventBus
 
 
 class AllTicketsFragment : Fragment() {
@@ -70,6 +67,7 @@ class AllTicketsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_all_tickets, container, false)
         initUI(view)
+        showProgress(true)
         initQuery(DatabaseUtils.getCurrentDate())
         initClicks()
         return view
@@ -156,9 +154,9 @@ class AllTicketsFragment : Fragment() {
         tvEmpty = view.findViewById(R.id.tvEmpty)
         swipeContainer = view.findViewById(R.id.swipeContainer)
         context?.let { recyclerView?.withLinearLayout(it) }
-        adapter = AllTicketsAdapter { ticket ->
+        adapter = AllTicketsAdapter({ ticket ->
             launchContact(ticket)
-        }
+        }, false)
         recyclerView?.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
         cpDate?.text = DatabaseUtils.getCurrentDate()
@@ -179,6 +177,7 @@ class AllTicketsFragment : Fragment() {
     }
 
     private fun initQuery(date: String) {
+        clearAllLists()
         lastPickedDate = date
         listener = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
             .whereEqualTo(DatabaseUtils.DATE, date)
@@ -186,7 +185,7 @@ class AllTicketsFragment : Fragment() {
             .addSnapshotListener { querySnapshot, error ->
                 querySnapshot?.run {
                     if (error != null) {
-                        Log.e(TAG, "Query error: ${error.message}")
+                        Log.e(javaClass.simpleName, "Query error: ${error.message}")
                         return@addSnapshotListener
                     }
 
@@ -230,6 +229,11 @@ class AllTicketsFragment : Fragment() {
                     recyclerView?.scrollToPosition(0)
 
                     showCount(allTickets)
+
+                    showProgress(false)
+
+                    EventBus.getDefault().postSticky(TicketEvent(TicketUtils.getUserCreatedTickets()))
+
                 }
             }
     }
@@ -298,6 +302,7 @@ class AllTicketsFragment : Fragment() {
         showProgress(false)
 
         showCount(filteredList)
+
     }
 
     private fun showEmptyLayout(list: List<Ticket>) {
@@ -360,5 +365,11 @@ class AllTicketsFragment : Fragment() {
                 Snackbar.LENGTH_LONG
             ).show()
         }
+    }
+
+    override fun onDestroy() {
+        Log.i(javaClass.simpleName, "Removing listener")
+        listener?.remove()
+        super.onDestroy()
     }
 }
