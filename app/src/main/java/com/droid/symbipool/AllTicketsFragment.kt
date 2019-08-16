@@ -42,6 +42,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 
 
@@ -56,7 +57,6 @@ class AllTicketsFragment : Fragment() {
     private var progressBar: ProgressBar? = null
     private var rootLayout: RelativeLayout? = null
     private var cpResetFilter: Chip? = null
-    private var cpDate: Chip? = null
     private var cpFilter: Chip? = null
     private var lastPickedDate: String? = null
 
@@ -95,24 +95,18 @@ class AllTicketsFragment : Fragment() {
                 activity.startFilterActivity()
             }
         }
-
-        cpDate?.run {
-            this.setOnClickListener {
-                onDatePicked()
-            }
-            this.setOnCloseIconClickListener {
-                onDatePicked()
-            }
-        }
     }
 
-    private fun onDatePicked() {
+    fun onDatePicked() {
         MaterialDialog(requireContext()).show {
             datePicker { _, date ->
                 val datePicked = DateStep.dateFormat.format(date.time)
                 if (datePicked != lastPickedDate) {
                     listener?.remove()
-                    cpDate?.text = datePicked
+
+                    val activity = activity as MainActivity
+                    activity.date.text = datePicked
+
                     showProgress(true)
                     clearAllLists()
                     initQuery(datePicked)
@@ -146,7 +140,6 @@ class AllTicketsFragment : Fragment() {
 
     private fun initUI(view: View) {
         recyclerView = view.findViewById(R.id.rvAllTickets)
-        cpDate = view.findViewById(R.id.cpDate)
         cpFilter = view.findViewById(R.id.cpFilter)
         cpResetFilter = view.findViewById(R.id.cpResetFilter)
         progressBar = view.findViewById(R.id.progressBar)
@@ -159,7 +152,7 @@ class AllTicketsFragment : Fragment() {
         }, false)
         recyclerView?.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
-        cpDate?.text = DatabaseUtils.getCurrentDate()
+
 
         swipeContainer?.setColorSchemeColors(Color.BLUE, Color.BLUE, Color.BLUE)
 
@@ -167,7 +160,10 @@ class AllTicketsFragment : Fragment() {
             lastPickedDate?.run {
                 cpResetFilter?.run { this.gone() }
                 listener?.remove()
-                cpDate?.text = this
+
+                val activity = activity as MainActivity
+                activity.date.text = this
+
                 showProgress(true)
                 clearAllLists()
                 initQuery(this)

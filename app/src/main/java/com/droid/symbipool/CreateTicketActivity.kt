@@ -1,11 +1,10 @@
 package com.droid.symbipool
 
-import android.Manifest
 import android.animation.Animator
 import android.app.Activity
 import android.content.Intent
+import android.location.Address
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -18,7 +17,6 @@ import com.droid.symbipool.creationSteps.ContactStep
 import com.droid.symbipool.creationSteps.DateStep
 import com.droid.symbipool.creationSteps.GenderStep
 import com.droid.symbipool.creationSteps.TimeStep
-import com.github.florent37.runtimepermission.kotlin.askPermission
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -26,10 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.rtchagas.pingplacepicker.PingPlacePicker
 import ernestoyaquello.com.verticalstepperform.Step
 import ernestoyaquello.com.verticalstepperform.listener.StepperFormListener
-import kotlinx.android.synthetic.main.activity_authentication.*
 import kotlinx.android.synthetic.main.activity_create_ticket.*
-import kotlinx.android.synthetic.main.activity_create_ticket.lottieAnimation
-import kotlinx.android.synthetic.main.activity_create_ticket.rootLayout
 import java.util.*
 
 
@@ -152,20 +147,7 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
                 if (this.size > 0) {
                     val address = addresses[0]
 
-                    if (address.subLocality == null || address.locality == null) {
-                        address.subLocality = TicketUtils.searchForSubLocality(addresses)
-                        address.locality = TicketUtils.searchForLocality(addresses)
-                        if (address.subLocality == null || address.locality == null) {
-                            MaterialDialog(this@CreateTicketActivity).show {
-                                title(R.string.error_area_not_found_title)
-                                cancelable(false)
-                                message(R.string.error_area_not_found_message)
-                                positiveButton(R.string.got_it) {
-                                    showPlacePicker()
-                                }
-                            }
-                        }
-                    }
+                    updateAddress(address, addresses)
 
                     when (locationType) {
                         LocationType.START -> {
@@ -220,6 +202,28 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
             Log.e(javaClass.simpleName, "${exception.message}")
         }
         return result.toString()
+    }
+
+    private fun updateAddress(address: Address, addresses: List<Address>) {
+        if (address.subLocality == null || address.locality == null) {
+
+            address.subLocality = TicketUtils.searchForSubLocality(addresses)
+            address.locality = TicketUtils.searchForLocality(addresses)
+
+            if (address.subLocality == null || address.locality == null) {
+
+                address.subLocality = address.locality
+                address.locality = address.subAdminArea
+
+                if (address.locality == null && address.subAdminArea != null) {
+                    address.locality = address.subAdminArea
+                }
+
+                if (address.subLocality == null && address.locality != null) {
+                    address.subLocality = address.locality
+                }
+            }
+        }
     }
 
     fun showPlacePicker() {

@@ -3,9 +3,12 @@ package com.droid.symbipool
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,6 +59,22 @@ fun makeCall(context: Context, number: String): Boolean {
     } catch (e: Exception) {
         e.printStackTrace()
         false
+    }
+}
+
+fun isLocationEnabled(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        // This is new method provided in API 28
+        val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        lm.isLocationEnabled
+    } else {
+        // This is Deprecated in API 28
+        val mode = Settings.Secure.getInt(
+            context.contentResolver, Settings.Secure.LOCATION_MODE,
+            Settings.Secure.LOCATION_MODE_OFF
+        )
+        mode != Settings.Secure.LOCATION_MODE_OFF
+
     }
 }
 

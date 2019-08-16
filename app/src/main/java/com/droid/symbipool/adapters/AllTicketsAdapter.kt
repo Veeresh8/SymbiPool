@@ -61,7 +61,6 @@ class AllTicketsAdapter(private val clickListener: (Ticket) -> Unit, private val
 
             itemView.btnContact.setOnClickListener { clickListener(ticket) }
             itemView.btnDelete.setOnClickListener { clickListener(ticket) }
-            itemView.setOnClickListener { clickListener(ticket) }
         }
     }
 }

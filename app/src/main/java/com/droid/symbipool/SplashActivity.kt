@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.activity_authentication.*
 
 class SplashActivity : AppCompatActivity() {
 

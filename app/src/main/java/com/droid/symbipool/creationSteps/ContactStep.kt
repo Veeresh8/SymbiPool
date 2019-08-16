@@ -1,10 +1,12 @@
 package com.droid.symbipool.creationSteps
 
+import android.content.Context
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -84,6 +86,12 @@ class ContactStep(title: String) : Step<String>(title) {
 
             override fun onTextChanged(characters: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (characters?.length == 10) {
+                    etPhone?.run {
+                        val inputMethodManager =
+                            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
+
+                    }
                     updateSubtitle(characters.toString(), false)
                     contactPicked = characters.toString()
                     markAsCompleted(false)

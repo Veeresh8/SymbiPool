@@ -33,18 +33,6 @@
                 android:textStyle="bold"/>
 
         <com.google.android.material.chip.Chip
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:chipBackgroundColor="#FFF"
-                android:elevation="4dp"
-                android:textColor="@color/colorAccent"
-                android:text="12 Aug 2019" app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:id="@+id/cpDate" app:layout_constraintVertical_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/cpFilter" android:layout_marginStart="8dp"/>
-
-        <com.google.android.material.chip.Chip
                 style="@style/Widget.MaterialComponents.Chip.Entry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,7 +43,7 @@
                 android:text="Reset Filters" app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintVertical_bias="0.0"
-                android:id="@+id/cpResetFilter" app:layout_constraintStart_toEndOf="@+id/cpDate"
+                android:id="@+id/cpResetFilter" app:layout_constraintStart_toEndOf="@+id/cpFilter"
                 android:layout_marginStart="8dp"/>
 
 
