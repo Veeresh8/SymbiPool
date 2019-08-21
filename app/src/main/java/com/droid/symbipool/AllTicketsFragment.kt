@@ -211,6 +211,10 @@ class AllTicketsFragment : Fragment() {
                         }
                     }
 
+                    val filteredList = allTickets.distinctBy { ticket -> ticket.ticketID }
+
+                    allTickets = filteredList as ArrayList<Ticket>
+
                     allTickets.sortBy {
                         it.time
                     }
@@ -220,6 +224,7 @@ class AllTicketsFragment : Fragment() {
                     swipeContainer?.isRefreshing = false
 
                     Log.i(javaClass.simpleName, "Start locations: $allStartLocations")
+
                     Log.i(javaClass.simpleName, "End locations: $allEndLocations")
 
                     recyclerView?.scrollToPosition(0)
