@@ -77,8 +77,6 @@ class AllTicketsAdapter(
                 itemView.btnDelete.gone()
             }
 
-            DatabaseUtils.latestDate = ticket.date
-
             itemView.setOnClickListener { clickInterface.loadTicketDetails(ticket)}
             itemView.btnContact.setOnClickListener { clickListener(ticket) }
             itemView.btnDelete.setOnClickListener { clickListener(ticket) }

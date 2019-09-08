@@ -86,15 +86,7 @@ class AllTicketsFragment : Fragment() {
             datePicker { _, date ->
                 val datePicked = DateStep.dateFormat.format(date.time)
                 if (datePicked != lastPickedDate) {
-                    listener?.remove()
-
-                    val activity = activity as MainActivity
-                    activity.date.text = datePicked
-
-                    showProgress(true)
-                    clearAllLists()
-                    initQuery(datePicked)
-                    showProgress(false)
+                    performPagination(datePicked)
                 }
             }
         }
@@ -143,9 +135,17 @@ class AllTicketsFragment : Fragment() {
                 }
 
                 override fun changeDate() {
-                    onDatePicked()
+                    MaterialDialog(requireContext()).show {
+                        datePicker { _, date ->
+                            val datePicked = DateStep.dateFormat.format(date.time)
+                            if (datePicked != lastPickedDate) {
+                                performPagination(datePicked)
+                            }
+                        }
+                    }
                 }
             })
+
         recyclerView?.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
         mBottomSheetDialog = activity?.let { BottomSheetDialog(it) }
@@ -170,6 +170,14 @@ class AllTicketsFragment : Fragment() {
         showPaginationProgress(true)
         Handler().postDelayed({
             getPaginatedResultsForDate(DatabaseUtils.getNextDate())
+        }, 1500)
+    }
+
+    private fun performPagination(date: String) {
+        paginationHint?.text = "Loading tickets for \n\n${date}"
+        showPaginationProgress(true)
+        Handler().postDelayed({
+            getPaginatedResultsForDate(date)
         }, 1500)
     }
 
@@ -218,7 +226,6 @@ class AllTicketsFragment : Fragment() {
             javaClass.simpleName,
             "Performing pagination for date $date"
         )
-        DatabaseUtils.latestDate = date
         FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
             .whereEqualTo(DatabaseUtils.DATE, date)
             .orderBy(DatabaseUtils.TIME, Query.Direction.ASCENDING)
@@ -235,6 +242,9 @@ class AllTicketsFragment : Fragment() {
                     )
 
                     if (querySnapshot.documentChanges.size == 0) {
+
+                        DatabaseUtils.latestDate = date
+
                         adapter?.notifyItemChanged(allTickets.size - 1)
                         showPaginationProgress(false)
                         val snackBar = rootLayout?.let {
@@ -292,8 +302,8 @@ class AllTicketsFragment : Fragment() {
                         it.time
                     }
 
-                    if (allTickets.size > 0) {
-                        DatabaseUtils.latestDate = allTickets[allTickets.size - 1].date
+                    if (allTickets.size >= 2) {
+                        DatabaseUtils.latestDate = allTickets[allTickets.size - 2].date
                     }
 
                     adapter?.run {
@@ -304,6 +314,10 @@ class AllTicketsFragment : Fragment() {
                         .postSticky(TicketEvent(TicketUtils.getUserCreatedTickets()))
 
                     Handler().postDelayed({
+                        Log.i(
+                            javaClass.simpleName,
+                            "(PAGINATION) Changing latest date to: ${DatabaseUtils.latestDate} || ${DatabaseUtils.getNextDate()}}"
+                        )
                         adapter?.notifyItemChanged(allTickets.size - 1)
                     }, 500)
 
@@ -315,7 +329,6 @@ class AllTicketsFragment : Fragment() {
     private fun initQuery(date: String) {
         clearAllLists()
         lastPickedDate = date
-        DatabaseUtils.latestDate = date
         listener = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
             .whereEqualTo(DatabaseUtils.DATE, date)
             .orderBy(DatabaseUtils.TIME, Query.Direction.ASCENDING)
@@ -372,6 +385,10 @@ class AllTicketsFragment : Fragment() {
 
                     allTickets.add(TicketUtils.getPaginationTicket())
 
+                    if (allTickets.size >= 2) {
+                        DatabaseUtils.latestDate = allTickets[allTickets.size - 2].date
+                    }
+
                     adapter?.submitList(allTickets.map { it })
 
                     Log.i(
@@ -387,6 +404,10 @@ class AllTicketsFragment : Fragment() {
                         .postSticky(TicketEvent(TicketUtils.getUserCreatedTickets()))
 
                     Handler().postDelayed({
+                        Log.i(
+                            javaClass.simpleName,
+                            "Changing latest date to: ${DatabaseUtils.latestDate} || ${DatabaseUtils.getNextDate()}}"
+                        )
                         adapter?.notifyItemChanged(allTickets.size - 1)
                     }, 500)
                 }
