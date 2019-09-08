@@ -1,6 +1,7 @@
 package com.droid.symbipool
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 
@@ -18,5 +19,6 @@ class Application : Application() {
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
             .build()
         FirebaseFirestore.getInstance().firestoreSettings = settings
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 }

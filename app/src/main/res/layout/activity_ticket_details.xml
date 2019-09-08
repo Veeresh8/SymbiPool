@@ -253,7 +253,7 @@
                 android:layout_height="200dp"
                 android:scaleType="fitXY"
                 android:visibility="visible"
-                app:srcCompat="@drawable/cry_image_compressed" />
+                android:src="@drawable/banner" />
 
     </LinearLayout>
 
