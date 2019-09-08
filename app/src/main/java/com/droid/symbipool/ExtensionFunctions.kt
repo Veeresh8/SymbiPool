@@ -3,6 +3,7 @@ package com.droid.symbipool
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
@@ -18,7 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 fun Activity.hideSoftKeyboard() {
     currentFocus?.run {
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
     }
 }
@@ -44,7 +46,8 @@ fun RecyclerView.withLinearLayout(context: Context) {
 }
 
 fun isConnectedToNetwork(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val activeNetworkInfo = connectivityManager.activeNetworkInfo as NetworkInfo
     return activeNetworkInfo.isConnected
 }
@@ -76,3 +79,12 @@ fun isLocationEnabled(context: Context): Boolean {
     }
 }
 
+fun isViewVisibleToUser(view: View, rootView: View): Boolean {
+    val scrollBounds = Rect()
+    rootView.getDrawingRect(scrollBounds)
+
+    val top = view.y
+    val bottom = top + view.height
+
+    return scrollBounds.top < top && scrollBounds.bottom > bottom
+}

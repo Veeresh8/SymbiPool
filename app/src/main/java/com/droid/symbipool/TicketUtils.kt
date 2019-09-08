@@ -63,6 +63,16 @@ object TicketUtils {
         val startAddressBuilder = StringBuilder()
 
         ticket.startLocation?.run {
+            startAddressBuilder.append("${this.subLocality}, \t ${this.locality}")
+        }
+
+        return startAddressBuilder.toString()
+    }
+
+    fun getFullStartAddress(ticket: Ticket): String {
+        val startAddressBuilder = StringBuilder()
+
+        ticket.startLocation?.run {
             startAddressBuilder.append(this.name)
             startAddressBuilder.append("\n")
             startAddressBuilder.append(this.fullAddress)
@@ -75,7 +85,7 @@ object TicketUtils {
         return startAddressBuilder.toString()
     }
 
-    fun getDestinationAddress(ticket: Ticket): String {
+    fun getFullDestinationAddress(ticket: Ticket): String {
         val destinationAddressBuilder = StringBuilder()
 
         ticket.endLocation?.run {
@@ -86,6 +96,15 @@ object TicketUtils {
             destinationAddressBuilder.append("Area - ${this.subLocality}")
             destinationAddressBuilder.append("\n\n")
             destinationAddressBuilder.append("City - ${this.locality}")
+        }
+        return destinationAddressBuilder.toString()
+    }
+
+    fun getDestinationAddress(ticket: Ticket): String {
+        val destinationAddressBuilder = StringBuilder()
+
+        ticket.endLocation?.run {
+            destinationAddressBuilder.append("${this.subLocality}, \t ${this.locality}")
         }
         return destinationAddressBuilder.toString()
     }
@@ -101,13 +120,20 @@ object TicketUtils {
 
     fun launchMapsWithCoordinates(lat: String?, longi: String?, context: Context) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?q=loc:$lat,$longi"))
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?q=loc:$lat,$longi")
+            )
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.setPackage("com.google.android.apps.maps")
             context.startActivity(intent)
         } catch (exception: Exception) {
             Log.e(javaClass.simpleName, "No intent found: ${exception.message}")
         }
+    }
+
+    fun getPaginationTicket(): Ticket {
+        return Ticket(isPaginationTicket = true, ticketID = "Pagination Ticket", date = "08-Sep-2030", time = 10436668200000)
     }
 
     fun getAllStartLocations(): List<String> {

@@ -1,0 +1,62 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        style="@style/CardView.Light"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+        <TextView
+                android:id="@+id/tvNextDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Load 12 Sept 2019 Tickets?"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+                android:id="@+id/btnChangeDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="Change Date"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnLoadMore"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvNextDate" />
+
+        <Button
+                android:id="@+id/btnLoadMore"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:text="Load"
+                android:fontFamily="sans-serif-smallcaps"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/btnChangeDate"
+                app:layout_constraintTop_toBottomOf="@+id/tvNextDate" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

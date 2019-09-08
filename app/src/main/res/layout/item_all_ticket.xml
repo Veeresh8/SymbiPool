@@ -1,6 +1,6 @@
-<androidx.cardview.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         style="@style/CardView.Light"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -11,113 +11,153 @@
             android:layout_height="wrap_content">
 
         <TextView
-                android:text="Navigate"
-                android:layout_width="wrap_content"
-                android:drawableStart="@drawable/round_navigation_24px"
-                android:drawablePadding="10dp"
-                android:gravity="center"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="12dp"
-                android:id="@+id/tvNavEnd"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-smallcaps" android:textAlignment="center"
-                android:textColor="@color/colorAccent" android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/tvDestination"
-                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="24dp"/>
-        <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp" android:id="@+id/tvDateTime" android:textStyle="bold"
-                android:fontFamily="sans-serif-smallcaps" tools:text="12:00 PM | 13 Aug 2019"
-                android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@+id/btnContact"/>
-
-        <TextView
-                tools:text="House of Commons \n122/B, 1st Main Rd, KHB Colony, 5th Block, Koramangala, Bengaluru, Karnataka 560095, India"
+                android:id="@+id/tvDateTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
-                android:id="@+id/tvStartAddress"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="16dp" android:textAlignment="viewStart"
-                android:fontFamily="sans-serif-smallcaps" android:textSize="15sp"
-                android:textColor="@color/quantum_black_100"
-                android:layout_marginTop="16dp" app:layout_constraintTop_toBottomOf="@+id/btnContact"
-                android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/tvNavStart"/>
-
-        <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="To"
-                android:id="@+id/tvToHint"
-                app:layout_constraintStart_toStartOf="parent"
-                android:textAlignment="center"
-                android:textSize="18sp" android:fontFamily="monospace"
-                android:textColor="#000" android:textStyle="bold"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/tvNavStart" android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toStartOf="@+id/tvPreference" app:layout_constraintHorizontal_bias="0.51"/>
+                android:layout_marginEnd="8dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/btnContact"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="12:00 PM | 13 Aug 2019" />
 
         <TextView
-                tools:text="Agent Jack's Bar ಎಜೆಂಟ್ ಜ್ಯಾಕ್ಸ್ ಬಾರ್ \n1134, 100th Feet Road, HAL 2nd Stage, Indiranagar, HAL 2nd Stage, Indiranagar, Bengaluru, Karnataka 560008, India"
+                android:id="@+id/tvStartAddress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
-                android:id="@+id/tvDestination" android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/tvToHint" app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="16dp" android:fontFamily="sans-serif-smallcaps" android:textSize="15sp"
-                android:textColor="@color/quantum_black_100"/>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textAlignment="viewStart"
+                android:textColor="@color/quantum_black_100"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toTopOf="@+id/tvToHint"
+                app:layout_constraintEnd_toEndOf="@id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnContact"
+                tools:text="Lavale Pune" />
 
         <TextView
-                android:text="Contact"
+                android:id="@+id/tvToHint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="monospace"
+                android:text="To"
+                android:textAlignment="textStart"
+                android:textColor="#000"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/tvPreference"
+                app:layout_constraintHorizontal_bias="0.51"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvStartAddress" />
+
+        <TextView
+                android:id="@+id/tvDestination"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textColor="@color/quantum_black_100"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvToHint"
+                tools:text="HAL 2nd Stage" />
+
+        <TextView
+                android:id="@+id/btnContact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:visibility="visible"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:drawableEnd="@drawable/round_launch_24px"
                 android:drawablePadding="16dp"
-                android:layout_marginEnd="16dp" app:layout_constraintEnd_toEndOf="parent" android:id="@+id/btnContact"
-                android:textAlignment="textEnd" android:fontFamily="sans-serif-smallcaps"
-                android:textColor="@color/colorAccent" android:layout_marginTop="13dp"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:fontFamily="sans-serif-smallcaps"
+                android:gravity="center"
+                android:text="Contact"
+                android:textAlignment="textEnd"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="@id/guideline"
+                app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-                android:text="Delete"
+                android:id="@+id/btnDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textStyle="bold"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="16dp"
                 android:drawableEnd="@drawable/round_delete_24px"
                 android:drawablePadding="16dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:gravity="center"
+                android:text="Delete"
+                android:textAlignment="textEnd"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"
                 android:visibility="gone"
-                android:layout_marginEnd="16dp" app:layout_constraintEnd_toEndOf="parent" android:id="@+id/btnDelete"
-                android:textAlignment="textEnd" android:fontFamily="sans-serif-smallcaps"
-                android:textColor="@color/colorAccent" android:layout_marginTop="13dp"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintEnd_toEndOf="@id/guideline"
+                app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-                tools:text="Female Only"
+                android:id="@+id/tvPreference"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
                 android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent" android:id="@+id/tvPreference"
-                android:fontFamily="sans-serif-smallcaps" android:textStyle="bold" android:visibility="visible"
+                android:fontFamily="sans-serif-smallcaps"
                 android:textColor="@color/colorAccent"
-                app:layout_constraintStart_toEndOf="@+id/tvToHint" android:layout_marginStart="8dp"
-                app:layout_constraintTop_toTopOf="@+id/tvToHint" android:layout_marginTop="2dp"/>
-        <TextView
-                android:text="Navigate"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="@id/guideline"
+                app:layout_constraintStart_toEndOf="@+id/tvToHint"
+                app:layout_constraintTop_toTopOf="@+id/tvToHint"
+                tools:text="Female Only" />
+
+        <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
                 android:layout_width="wrap_content"
-                android:drawableStart="@drawable/round_navigation_24px"
-                android:drawablePadding="10dp"
-                android:gravity="center"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="12dp"
-                android:id="@+id/tvNavStart" android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/tvStartAddress" android:textStyle="bold"
-                android:fontFamily="sans-serif-smallcaps" android:textAlignment="center"
-                android:textColor="@color/colorAccent"/>
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="335dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/nextLayoutView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:padding="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/arrow_right" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

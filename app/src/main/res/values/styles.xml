@@ -26,9 +26,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
         <item name="tabIndicatorColor">@android:color/white</item>
@@ -40,5 +40,9 @@
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_up</item>
         <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+
+    <style name="LinearProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/quantum_white_100</item>
     </style>
 </resources>

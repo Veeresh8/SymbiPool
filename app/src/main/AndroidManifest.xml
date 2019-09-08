@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.droid.symbipool">
+        xmlns:tools="http://schemas.android.com/tools"
+        package="com.droid.symbipool">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
             android:name=".Application"
             android:allowBackup="true"
@@ -16,30 +17,30 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".TicketDetailsActivity"
+                android:screenOrientation="portrait"/>
         <activity android:name=".SplashActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AuthenticationActivity">
-
-        </activity>
-        <activity android:name=".filterTicket.FilterActivity"/>
+        <activity android:name=".AuthenticationActivity"/>
+        <activity android:name=".filterTicket.FilterActivity" />
 
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyB5sy_7l7HMtG6ZJY-1cvLNAm51JzSfKFU"/>
+                android:value="AIzaSyB5sy_7l7HMtG6ZJY-1cvLNAm51JzSfKFU" />
 
         <activity
                 android:name=".MainActivity"
                 android:label="@string/app_name"
                 android:screenOrientation="portrait"
-                android:theme="@style/AppTheme.NoActionBar"/>
+                android:theme="@style/AppTheme.NoActionBar" />
         <activity
                 android:name=".CreateTicketActivity"
-                android:screenOrientation="portrait"/>
+                android:screenOrientation="portrait" />
     </application>
 
 </manifest>

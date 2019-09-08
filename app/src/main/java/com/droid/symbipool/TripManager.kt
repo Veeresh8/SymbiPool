@@ -3,7 +3,11 @@ package com.droid.symbipool
 import com.google.firebase.firestore.Exclude
 import com.google.gson.Gson
 import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
+
+@Parcelize
 data class StartLocation(
     var name: String? = null,
     var subLocality: String? = null,
@@ -11,7 +15,7 @@ data class StartLocation(
     var fullAddress: String? = null,
     var lat: String? = null,
     var longi: String? = null
-) {
+) : Parcelable {
 
     @Exclude
     fun getAsString(): String {
@@ -28,6 +32,7 @@ data class StartLocation(
     }
 }
 
+@Parcelize
 data class EndLocation(
     var name: String? = null,
     var subLocality: String? = null,
@@ -35,7 +40,7 @@ data class EndLocation(
     var fullAddress: String? = null,
     var lat: String? = null,
     var longi: String? = null
-) {
+) : Parcelable {
 
     @Exclude
     fun getAsString(): String {
@@ -52,6 +57,7 @@ data class EndLocation(
     }
 }
 
+@Parcelize
 data class Ticket(
     var ticketID: String? = null,
     var startLocation: StartLocation? = null,
@@ -60,8 +66,9 @@ data class Ticket(
     var time: Long? = null,
     var genderPreference: String? = null,
     var contact: String? = null,
-    var creator: String? = null
-)
+    var creator: String? = null,
+    @Exclude var isPaginationTicket: Boolean = false
+) : Parcelable
 
 data class TicketFilter(
     var startLocation: Pair<String, String>? = null,
@@ -69,6 +76,6 @@ data class TicketFilter(
     var genderPreference: String? = null
 ) : Serializable
 
-data class TicketEvent (
+data class TicketEvent(
     var tickets: List<Ticket>? = null
 )

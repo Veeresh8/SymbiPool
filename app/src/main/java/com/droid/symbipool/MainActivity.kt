@@ -41,7 +41,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initPermissions() {
-        askPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION) {
+        askPermission(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) {
         }.onDeclined {
             askPermissionsAgain()
         }.runtimePermission.onForeverDenied {
@@ -57,7 +60,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun askPermissionsAgain() {
-        val snackBar = Snackbar.make(main_content, "Location permission needed to continue", Snackbar.LENGTH_LONG)
+        val snackBar = Snackbar.make(
+            main_content,
+            "Location permission needed to continue",
+            Snackbar.LENGTH_LONG
+        )
         snackBar.setAction("Grant") {
             initPermissions()
         }
@@ -65,8 +72,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hasGrantedPermissions(): Boolean {
-        val fineLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        val coarseLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val fineLocation =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarseLocation =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
         return fineLocation == PackageManager.PERMISSION_GRANTED && coarseLocation == PackageManager.PERMISSION_GRANTED
     }
 
@@ -136,6 +145,13 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    fun startTicketDetailsActivity(canDelete: Boolean, ticket: Ticket) {
+        val intent = Intent(this, TicketDetailsActivity::class.java)
+        intent.putExtra("ticket", ticket)
+        intent.putExtra("can_delete", canDelete)
+        startActivity(intent)
     }
 
     fun startFilterActivity() {

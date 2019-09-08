@@ -3,7 +3,6 @@ package com.droid.symbipool
 import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -15,10 +14,10 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.droid.symbipool.TicketUtils.addLocations
@@ -36,6 +35,7 @@ import com.droid.symbipool.TicketUtils.startLocalityCheck
 import com.droid.symbipool.adapters.AllTicketsAdapter
 import com.droid.symbipool.creationSteps.DateStep
 import com.github.florent37.runtimepermission.kotlin.askPermission
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentChange
@@ -48,15 +48,19 @@ import org.greenrobot.eventbus.EventBus
 
 class AllTicketsFragment : Fragment() {
 
+    private var isModified: Boolean? = null
+    private var paginationHint: TextView? = null
+    private var sheetView: View? = null
+    private var mBottomSheetDialog: BottomSheetDialog? = null
     private var listener: ListenerRegistration? = null
     private var adapter: AllTicketsAdapter? = null
     private var firestore: FirebaseFirestore? = null
     private var recyclerView: RecyclerView? = null
     private var tvEmpty: TextView? = null
-    private var swipeContainer: SwipeRefreshLayout? = null
     private var progressBar: ProgressBar? = null
     private var rootLayout: RelativeLayout? = null
     private var cpResetFilter: Chip? = null
+    private var cpNextDate: Chip? = null
     private var cpFilter: Chip? = null
     private var lastPickedDate: String? = null
 
@@ -64,37 +68,17 @@ class AllTicketsFragment : Fragment() {
         fun newInstance(): AllTicketsFragment = AllTicketsFragment()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_all_tickets, container, false)
         initUI(view)
         showProgress(true)
         initQuery(DatabaseUtils.getCurrentDate())
         initClicks()
         return view
-    }
-
-    private fun initClicks() {
-        cpResetFilter?.run {
-            this.setOnClickListener {
-                resetFilter()
-            }
-            this.setOnCloseIconClickListener {
-                resetFilter()
-            }
-        }
-
-        cpFilter?.run {
-            this.setOnClickListener {
-
-                if (tvEmpty?.visibility == View.VISIBLE) {
-                    Snackbar.make(this, "No results to filter", Snackbar.LENGTH_LONG).show()
-                    return@setOnClickListener
-                }
-
-                val activity = activity as MainActivity
-                activity.startFilterActivity()
-            }
-        }
     }
 
     fun onDatePicked() {
@@ -141,53 +125,136 @@ class AllTicketsFragment : Fragment() {
     private fun initUI(view: View) {
         recyclerView = view.findViewById(R.id.rvAllTickets)
         cpFilter = view.findViewById(R.id.cpFilter)
+        cpNextDate = view.findViewById(R.id.cpNextDate)
         cpResetFilter = view.findViewById(R.id.cpResetFilter)
         progressBar = view.findViewById(R.id.progressBar)
         rootLayout = view.findViewById(R.id.rootLayout)
         tvEmpty = view.findViewById(R.id.tvEmpty)
-        swipeContainer = view.findViewById(R.id.swipeContainer)
         context?.let { recyclerView?.withLinearLayout(it) }
-        adapter = AllTicketsAdapter({ ticket ->
-            launchContact(ticket)
-        }, false)
+        adapter = AllTicketsAdapter({ ticket -> launchContact(ticket) },
+            false,
+            object : AllTicketsAdapter.ClickInterface {
+                override fun loadTicketDetails(ticket: Ticket) {
+                    navigateToTicketDetails(ticket)
+                }
+
+                override fun loadMoreTickets() {
+                    performPagination()
+                }
+
+                override fun changeDate() {
+                    onDatePicked()
+                }
+            })
         recyclerView?.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
+        mBottomSheetDialog = activity?.let { BottomSheetDialog(it) }
+        mBottomSheetDialog?.window?.setDimAmount(0.9F)
+        sheetView = layoutInflater.inflate(
+            R.layout.bs_pagination_loading,
+            null
+        )
+        sheetView?.run {
+            paginationHint = this.findViewById(R.id.tvSupportHint) as TextView
+            mBottomSheetDialog?.setContentView(this)
+        }
+    }
+
+    private fun navigateToTicketDetails(ticket: Ticket) {
+        val activity = activity as MainActivity
+        activity.startTicketDetailsActivity(false, ticket)
+    }
+
+    private fun performPagination() {
+        paginationHint?.text = "Loading tickets for \n\n${DatabaseUtils.getNextDate()}"
+        showPaginationProgress(true)
+        Handler().postDelayed({
+            getPaginatedResultsForDate(DatabaseUtils.getNextDate())
+        }, 1500)
+    }
 
 
-        swipeContainer?.setColorSchemeColors(Color.BLUE, Color.BLUE, Color.BLUE)
+    private fun initClicks() {
 
-        swipeContainer?.setOnRefreshListener {
-            lastPickedDate?.run {
-                cpResetFilter?.run { this.gone() }
-                listener?.remove()
+        cpResetFilter?.run {
+            this.setOnClickListener {
+                resetFilter()
+            }
+            this.setOnCloseIconClickListener {
+                resetFilter()
+            }
+        }
+
+        cpFilter?.run {
+            this.setOnClickListener {
+
+                if (tvEmpty?.visibility == View.VISIBLE) {
+                    Snackbar.make(this, "No results to filter", Snackbar.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
 
                 val activity = activity as MainActivity
-                activity.date.text = this
+                activity.startFilterActivity()
+            }
+        }
 
-                showProgress(true)
-                clearAllLists()
-                initQuery(this)
-                showProgress(false)
+        cpNextDate?.run {
+            this.setOnClickListener {
+                onDatePicked()
             }
         }
     }
 
-    private fun initQuery(date: String) {
-        clearAllLists()
-        lastPickedDate = date
-        listener = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
+    private fun showPaginationProgress(show: Boolean) {
+        if (show) {
+            mBottomSheetDialog?.show()
+        } else {
+            mBottomSheetDialog?.dismiss()
+        }
+    }
+
+    private fun getPaginatedResultsForDate(date: String) {
+        Log.i(
+            javaClass.simpleName,
+            "Performing pagination for date $date"
+        )
+        DatabaseUtils.latestDate = date
+        FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
             .whereEqualTo(DatabaseUtils.DATE, date)
             .orderBy(DatabaseUtils.TIME, Query.Direction.ASCENDING)
             .addSnapshotListener { querySnapshot, error ->
                 querySnapshot?.run {
                     if (error != null) {
-                        Log.e(javaClass.simpleName, "Query error: ${error.message}")
+                        Log.e(javaClass.simpleName, "Pagination query error: ${error.message}")
+                        return@addSnapshotListener
+                    }
+
+                    Log.i(
+                        javaClass.simpleName,
+                        "Pagination result size ${querySnapshot.documentChanges.size}"
+                    )
+
+                    if (querySnapshot.documentChanges.size == 0) {
+                        adapter?.notifyItemChanged(allTickets.size - 1)
+                        showPaginationProgress(false)
+                        val snackBar = rootLayout?.let {
+                            Snackbar
+                                .make(
+                                    it,
+                                    "No results for $date \nCheck ${DatabaseUtils.getNextDate()}",
+                                    5000
+                                )
+                                .setAction("Load") {
+                                    performPagination()
+                                }
+                        }
+                        snackBar?.show()
                         return@addSnapshotListener
                     }
 
                     for (document in querySnapshot.documentChanges) {
                         val ticket = document.document.toObject(Ticket::class.java)
-
+                        DatabaseUtils.latestDate = ticket.date
                         when (document.type) {
                             DocumentChange.Type.ADDED -> {
                                 Log.i(TAG, "New ticket: $ticket")
@@ -211,6 +278,79 @@ class AllTicketsFragment : Fragment() {
                         }
                     }
 
+                    if (allTickets.contains(TicketUtils.getPaginationTicket()))
+                        allTickets.remove(TicketUtils.getPaginationTicket())
+
+                    val filteredList = allTickets.distinctBy { ticket ->
+                        ticket.ticketID
+                    }
+
+                    allTickets = filteredList as ArrayList<Ticket>
+
+                    allTickets.add(TicketUtils.getPaginationTicket())
+
+                    adapter?.run {
+                        submitList(allTickets.map { it })
+                    }
+
+                    EventBus.getDefault()
+                        .postSticky(TicketEvent(TicketUtils.getUserCreatedTickets()))
+
+                    Handler().postDelayed({
+                        adapter?.notifyItemChanged(allTickets.size - 1)
+                    }, 500)
+
+                    showPaginationProgress(false)
+                }
+            }
+    }
+
+    private fun initQuery(date: String) {
+        clearAllLists()
+        lastPickedDate = date
+        DatabaseUtils.latestDate = date
+        listener = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
+            .whereEqualTo(DatabaseUtils.DATE, date)
+            .orderBy(DatabaseUtils.TIME, Query.Direction.ASCENDING)
+            .addSnapshotListener { querySnapshot, error ->
+                querySnapshot?.run {
+                    if (error != null) {
+                        Log.e(javaClass.simpleName, "Query error: ${error.message}")
+                        return@addSnapshotListener
+                    }
+
+                    isModified = false
+
+                    for (document in querySnapshot.documentChanges) {
+                        val ticket = document.document.toObject(Ticket::class.java)
+                        when (document.type) {
+                            DocumentChange.Type.ADDED -> {
+                                Log.i(TAG, "New ticket: $ticket")
+                                addLocations(ticket)
+                                allTickets.add(ticket)
+                            }
+                            DocumentChange.Type.MODIFIED -> {
+                                isModified = true
+                                Log.i(TAG, "Modified ticket: $ticket")
+                                addLocations(ticket)
+                                allTickets.forEachIndexed { index, currentTicket ->
+                                    if (ticket.ticketID == currentTicket.ticketID) {
+                                        allTickets[index] = ticket
+                                    }
+                                }
+                            }
+                            DocumentChange.Type.REMOVED -> {
+                                isModified = true
+                                Log.i(TAG, "Removed ticket: $ticket")
+                                removeLocations(ticket)
+                                allTickets.remove(ticket)
+                            }
+                        }
+                    }
+
+                    if (allTickets.contains(TicketUtils.getPaginationTicket()))
+                        allTickets.remove(TicketUtils.getPaginationTicket())
+
                     val filteredList = allTickets.distinctBy { ticket -> ticket.ticketID }
 
                     allTickets = filteredList as ArrayList<Ticket>
@@ -219,22 +359,30 @@ class AllTicketsFragment : Fragment() {
                         it.time
                     }
 
+                    allTickets.add(TicketUtils.getPaginationTicket())
+
                     adapter?.submitList(allTickets.map { it })
 
-                    swipeContainer?.isRefreshing = false
+                    Log.i(
+                        javaClass.simpleName,
+                        "Start locations: $allStartLocations || End locations: $allEndLocations"
+                    )
 
-                    Log.i(javaClass.simpleName, "Start locations: $allStartLocations")
-
-                    Log.i(javaClass.simpleName, "End locations: $allEndLocations")
-
-                    recyclerView?.scrollToPosition(0)
+                    isModified?.run {
+                        if (!this)
+                            recyclerView?.scrollToPosition(0)
+                    }
 
                     showCount(allTickets)
 
                     showProgress(false)
 
-                    EventBus.getDefault().postSticky(TicketEvent(TicketUtils.getUserCreatedTickets()))
+                    EventBus.getDefault()
+                        .postSticky(TicketEvent(TicketUtils.getUserCreatedTickets()))
 
+                    Handler().postDelayed({
+                        adapter?.notifyItemChanged(allTickets.size - 1)
+                    }, 500)
                 }
             }
     }
@@ -254,7 +402,10 @@ class AllTicketsFragment : Fragment() {
 
             val genderPreference = this.genderPreference
 
-            Log.i(javaClass.simpleName, "$startLocality || $startCity -> $endLocality || $endCity -> $genderPreference")
+            Log.i(
+                javaClass.simpleName,
+                "$startLocality || $startCity -> $endLocality || $endCity -> $genderPreference"
+            )
 
             filteredList = allTickets.map { it }
                 .filter { startCityCheck(it, ticketFilter) && endCityCheck(it, ticketFilter) }
@@ -264,21 +415,35 @@ class AllTicketsFragment : Fragment() {
             if (startLocality == TicketUtils.ANY_LOCATION && endLocality != TicketUtils.ANY_LOCATION) {
                 filteredList = filteredList
                     .filter { endLocalityCheck(it, ticketFilter) && genderCheck(it, ticketFilter) }
-                Log.i(javaClass.simpleName, "(END LOCATION) Filter ticket ${filteredList.size}: $filteredList")
+                Log.i(
+                    javaClass.simpleName,
+                    "(END LOCATION) Filter ticket ${filteredList.size}: $filteredList"
+                )
                 return@run
             }
 
             if (startLocality != TicketUtils.ANY_LOCATION && endLocality == TicketUtils.ANY_LOCATION) {
                 filteredList = filteredList
-                    .filter { startLocalityCheck(it, ticketFilter) && genderCheck(it, ticketFilter) }
-                Log.i(javaClass.simpleName, "(START LOCATION) Filter ticket ${filteredList.size}: $filteredList")
+                    .filter {
+                        startLocalityCheck(it, ticketFilter) && genderCheck(
+                            it,
+                            ticketFilter
+                        )
+                    }
+                Log.i(
+                    javaClass.simpleName,
+                    "(START LOCATION) Filter ticket ${filteredList.size}: $filteredList"
+                )
                 return@run
             }
 
             if (startLocality == TicketUtils.ANY_LOCATION && endLocality == TicketUtils.ANY_LOCATION) {
                 filteredList = filteredList
                     .filter { genderCheck(it, ticketFilter) }
-                Log.i(javaClass.simpleName, "(GENDER) Filter ticket ${filteredList.size}: $filteredList")
+                Log.i(
+                    javaClass.simpleName,
+                    "(GENDER) Filter ticket ${filteredList.size}: $filteredList"
+                )
                 return@run
             }
 
@@ -289,7 +454,10 @@ class AllTicketsFragment : Fragment() {
                                 endLocalityCheck(it, ticketFilter) &&
                                 genderCheck(it, ticketFilter)
                     }
-                Log.i(javaClass.simpleName, "(FILTERED) Filter ticket ${filteredList.size}: $filteredList")
+                Log.i(
+                    javaClass.simpleName,
+                    "(FILTERED) Filter ticket ${filteredList.size}: $filteredList"
+                )
                 return@run
             }
         }
@@ -319,10 +487,9 @@ class AllTicketsFragment : Fragment() {
     private fun showCount(list: List<Ticket>) {
         Handler().postDelayed({
             rootLayout?.run {
-                Snackbar.make(this, "Found ${list.size} results", Snackbar.LENGTH_LONG).show()
                 showEmptyLayout(list)
             }
-        }, 1500)
+        }, 1000)
     }
 
     private fun launchContact(ticket: Ticket) {
@@ -344,7 +511,8 @@ class AllTicketsFragment : Fragment() {
                 }
             } else {
                 try {
-                    val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", this, null))
+                    val emailIntent =
+                        Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", this, null))
                     emailIntent.putExtra(
                         Intent.EXTRA_SUBJECT,
                         "Regarding a ride on ${TicketUtils.getTimeAndDate(ticket)}"

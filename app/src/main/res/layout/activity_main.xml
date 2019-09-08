@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/main_content"
         android:layout_width="match_parent"
@@ -24,26 +23,27 @@
 
             <ImageView
                     android:id="@+id/logout"
-                    app:srcCompat="@drawable/round_power_settings_new_24px"
-                    android:textAlignment="textStart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"/>
+                    android:layout_gravity="start"
+                    android:textAlignment="textStart"
+                    app:srcCompat="@drawable/round_power_settings_new_24px" />
 
             <TextView
                     android:id="@+id/date"
-                    android:text="12 Aug 2019"
-                    android:fontFamily="sans-serif-smallcaps"
-                    android:textAlignment="center"
-                    android:padding="10dp"
                     android:layout_width="wrap_content"
-                    android:drawablePadding="16dp"
-                    android:drawableEnd="@drawable/round_event_24px"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_marginEnd="16dp"
-                    android:textSize="18sp" android:textColor="@android:color/white"
-                    android:textStyle="bold"/>
+                    android:drawableEnd="@drawable/round_event_24px"
+                    android:drawablePadding="16dp"
+                    android:fontFamily="sans-serif-smallcaps"
+                    android:padding="10dp"
+                    android:text="12 Aug 2019"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -55,7 +55,7 @@
                 android:layout_gravity="left"
                 android:background="@color/colorAccent"
                 app:tabGravity="fill"
-                app:tabMode="fixed"/>
+                app:tabMode="fixed" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -63,7 +63,7 @@
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fabCreateTicket"
@@ -72,10 +72,10 @@
             android:layout_margin="24dp"
             android:text="Create Ticket"
             android:textColor="#fff"
-            app:iconTint="#fff"
             app:backgroundTint="@color/colorAccent"
             app:icon="@drawable/round_create_24px"
+            app:iconTint="#fff"
             app:layout_anchor="@id/viewPager"
-            app:layout_anchorGravity="bottom|right|end"/>
+            app:layout_anchorGravity="bottom|right|end" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

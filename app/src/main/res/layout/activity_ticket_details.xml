@@ -1,0 +1,260 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/rootLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <RelativeLayout
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:padding="10dp">
+
+            <ImageView
+                    android:id="@+id/ivBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/arrow_left" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="sans-serif-smallcaps"
+                    android:padding="10dp"
+                    android:text="Ticket Details"
+                    android:textColor="@color/quantum_white_100"
+                    android:textSize="16sp" />
+
+        </RelativeLayout>
+
+
+        <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/ticketDetails"
+                style="@style/CardView.Light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/toolbar"
+                android:layout_margin="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:id="@+id/tvNavEnd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="24dp"
+                        android:drawableStart="@drawable/round_navigation_24px"
+                        android:drawablePadding="10dp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:gravity="center"
+                        android:text="Navigate"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDestination" />
+
+                <TextView
+                        android:id="@+id/tvDateTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/btnContact"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="12:00 PM | 13 Aug 2019" />
+
+                <TextView
+                        android:id="@+id/tvStartAddress"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/quantum_black_100"
+                        android:textSize="15sp"
+                        app:layout_constraintBottom_toTopOf="@+id/tvNavStart"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnContact"
+                        tools:text="House of Commons \n122/B, 1st Main Rd, KHB Colony, 5th Block, Koramangala, Bengaluru, Karnataka 560095, India" />
+
+                <TextView
+                        android:id="@+id/tvToHint"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="monospace"
+                        android:text="To"
+                        android:textAlignment="center"
+                        android:textColor="#000"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvPreference"
+                        app:layout_constraintHorizontal_bias="0.51"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvNavStart" />
+
+                <TextView
+                        android:id="@+id/tvDestination"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:textColor="@color/quantum_black_100"
+                        android:textSize="15sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvToHint"
+                        tools:text="Agent Jack's Bar ಎಜೆಂಟ್ ಜ್ಯಾಕ್ಸ್ ಬಾರ್ \n1134, 100th Feet Road, HAL 2nd Stage, Indiranagar, HAL 2nd Stage, Indiranagar, Bengaluru, Karnataka 560008, India" />
+
+                <TextView
+                        android:id="@+id/btnContact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginEnd="16dp"
+                        android:drawableEnd="@drawable/round_launch_24px"
+                        android:drawablePadding="16dp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:gravity="center"
+                        android:text="Contact"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"
+                        android:visibility="invisible"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                        android:id="@+id/btnDelete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="13dp"
+                        android:layout_marginEnd="16dp"
+                        android:drawableEnd="@drawable/round_delete_24px"
+                        android:drawablePadding="16dp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:gravity="center"
+                        android:text="Delete"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                        android:id="@+id/tvPreference"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="16dp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"
+                        android:visibility="visible"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tvToHint"
+                        app:layout_constraintTop_toTopOf="@+id/tvToHint"
+                        tools:text="Female Only" />
+
+                <TextView
+                        android:id="@+id/tvNavStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="16dp"
+                        android:drawableStart="@drawable/round_navigation_24px"
+                        android:drawablePadding="10dp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:gravity="center"
+                        android:text="Navigate"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvStartAddress" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <Button
+                android:id="@+id/btnTicketContact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ticketDetails"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:text="Contact" />
+
+        <Button
+                android:id="@+id/btnTicketDelete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ticketDetails"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:text="Delete"
+                android:visibility="gone" />
+
+
+        <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/ivSupport"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-smallcaps"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Causes we support"
+                android:textColor="@color/colorAccent"
+                android:textSize="18sp" />
+
+        <ImageView
+                android:id="@+id/ivSupport"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="fitXY"
+                android:visibility="visible"
+                app:srcCompat="@drawable/cry_image_compressed" />
+
+    </LinearLayout>
+
+</ScrollView>

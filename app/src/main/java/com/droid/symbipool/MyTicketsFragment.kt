@@ -25,7 +25,11 @@ class MyTicketsFragment : Fragment() {
         fun newInstance(): MyTicketsFragment = MyTicketsFragment()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_my_tickets, container, false)
         initUI(view)
         return view
@@ -37,7 +41,21 @@ class MyTicketsFragment : Fragment() {
         context?.let { recyclerView?.withLinearLayout(it) }
         adapter = AllTicketsAdapter({ ticket ->
             deleteTicket(ticket)
-        }, true)
+        }, true, object : AllTicketsAdapter.ClickInterface {
+            override fun loadTicketDetails(ticket: Ticket) {
+                val activity = activity as MainActivity
+                activity.startTicketDetailsActivity(true, ticket)
+            }
+
+            override fun loadMoreTickets() {
+
+            }
+
+            override fun changeDate() {
+
+            }
+
+        })
         recyclerView?.adapter = adapter
     }
 
