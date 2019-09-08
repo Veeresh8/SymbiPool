@@ -73,8 +73,10 @@ class CreateTicketActivity : AppCompatActivity(), StepperFormListener {
 
         val collection = FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION).document()
 
+        val time = TicketUtils.getTimeStamp(timeStep.stepData.trim(), dateStep.stepData.trim())
+
         val ticket = Ticket(
-            time = timeStep.stepData.toLong(),
+            time = time,
             date = dateStep.stepData.trim(),
             startLocation = startLocation?.getActual(),
             endLocation = endLocation?.getActual(),

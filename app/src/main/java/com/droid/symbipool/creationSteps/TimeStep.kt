@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat
 class TimeStep(title: String) : Step<String>(title) {
 
     private var timePicked: String? = null
-    private var timestamp: Long? = null
+    private var timestamp: String? = null
     var timeFormat = SimpleDateFormat("hh:mm aa")
 
     override fun restoreStepData(data: String?) {
@@ -45,7 +45,7 @@ class TimeStep(title: String) : Step<String>(title) {
                     val formattedDate = timeFormat.format(datetime.time)
                     timePicked = formattedDate
                     tvTime.text = timePicked
-                    timestamp = datetime.timeInMillis
+                    timestamp = formattedDate
                     markAsCompleted(false)
                 }
             }

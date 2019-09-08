@@ -242,4 +242,13 @@ object TicketUtils {
         }
         return null
     }
+
+    fun getTimeStamp(time: String, date: String): Long {
+        val format = SimpleDateFormat("dd-MMM-yyyy hh:mm aa")
+        val dateInString = "$date $time"
+        val formattedDate = format.parse(dateInString) as Date
+        val calendar = Calendar.getInstance()
+        calendar.time = formattedDate
+        return calendar.timeInMillis
+    }
 }

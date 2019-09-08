@@ -254,7 +254,6 @@ class AllTicketsFragment : Fragment() {
 
                     for (document in querySnapshot.documentChanges) {
                         val ticket = document.document.toObject(Ticket::class.java)
-                        DatabaseUtils.latestDate = ticket.date
                         when (document.type) {
                             DocumentChange.Type.ADDED -> {
                                 Log.i(TAG, "New ticket: $ticket")
@@ -288,6 +287,14 @@ class AllTicketsFragment : Fragment() {
                     allTickets = filteredList as ArrayList<Ticket>
 
                     allTickets.add(TicketUtils.getPaginationTicket())
+
+                    allTickets.sortBy {
+                        it.time
+                    }
+
+                    if (allTickets.size > 0) {
+                        DatabaseUtils.latestDate = allTickets[allTickets.size - 1].date
+                    }
 
                     adapter?.run {
                         submitList(allTickets.map { it })
@@ -355,8 +362,12 @@ class AllTicketsFragment : Fragment() {
 
                     allTickets = filteredList as ArrayList<Ticket>
 
-                    allTickets.sortBy {
-                        it.time
+                    isModified?.run {
+                        if (!this) {
+                            allTickets.sortBy {
+                                it.time
+                            }
+                        }
                     }
 
                     allTickets.add(TicketUtils.getPaginationTicket())
@@ -367,11 +378,6 @@ class AllTicketsFragment : Fragment() {
                         javaClass.simpleName,
                         "Start locations: $allStartLocations || End locations: $allEndLocations"
                     )
-
-                    isModified?.run {
-                        if (!this)
-                            recyclerView?.scrollToPosition(0)
-                    }
 
                     showCount(allTickets)
 
