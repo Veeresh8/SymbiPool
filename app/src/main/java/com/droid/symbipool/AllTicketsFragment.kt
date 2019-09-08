@@ -81,7 +81,7 @@ class AllTicketsFragment : Fragment() {
         return view
     }
 
-    fun onDatePicked() {
+    private fun onDatePicked() {
         MaterialDialog(requireContext()).show {
             datePicker { _, date ->
                 val datePicked = DateStep.dateFormat.format(date.time)
@@ -178,7 +178,7 @@ class AllTicketsFragment : Fragment() {
         showPaginationProgress(true)
         Handler().postDelayed({
             getPaginatedResultsForDate(date)
-        }, 1500)
+        }, 1000)
     }
 
 
@@ -320,6 +320,8 @@ class AllTicketsFragment : Fragment() {
                         )
                         adapter?.notifyItemChanged(allTickets.size - 1)
                     }, 500)
+
+                    showSnack("Found ${querySnapshot.documentChanges.size} results")
 
                     showPaginationProgress(false)
                 }

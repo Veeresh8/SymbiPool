@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initViewPager()
         initClickListeners()
-        date.text = DatabaseUtils.getCurrentDate()
     }
 
     private fun initPermissions() {
@@ -99,10 +98,6 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
             }
-        }
-
-        date.setOnClickListener {
-            allTicketsFragment.onDatePicked()
         }
     }
 
