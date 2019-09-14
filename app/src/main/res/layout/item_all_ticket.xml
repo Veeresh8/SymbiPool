@@ -10,6 +10,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+        <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="16dp" />
+
         <TextView
                 android:id="@+id/tvDateTime"
                 android:layout_width="0dp"
@@ -20,7 +27,7 @@
                 android:fontFamily="sans-serif-smallcaps"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/btnContact"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline2"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="12:00 PM | 13 Aug 2019" />
 
@@ -38,7 +45,7 @@
                 android:textSize="15sp"
                 app:layout_constraintBottom_toTopOf="@+id/tvToHint"
                 app:layout_constraintEnd_toEndOf="@id/guideline"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline2"
                 app:layout_constraintTop_toBottomOf="@+id/btnContact"
                 tools:text="Lavale Pune" />
 
@@ -57,7 +64,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/tvPreference"
                 app:layout_constraintHorizontal_bias="0.51"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline2"
                 app:layout_constraintTop_toBottomOf="@+id/tvStartAddress" />
 
         <TextView
@@ -73,7 +80,7 @@
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/guideline"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline2"
                 app:layout_constraintTop_toBottomOf="@+id/tvToHint"
                 tools:text="HAL 2nd Stage" />
 
@@ -140,6 +147,7 @@
                 android:id="@+id/nextLayoutView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginStart="16dp"
                 android:background="@color/colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -151,11 +159,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:padding="10dp"
+                    android:padding="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/arrow_right" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/userTicketHint"
+                android:layout_width="0dp"
+                android:visibility="gone"
+                android:layout_height="0dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

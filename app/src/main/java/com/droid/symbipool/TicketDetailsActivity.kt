@@ -14,6 +14,7 @@ import com.github.florent37.runtimepermission.kotlin.askPermission
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_ticket_details.*
+import org.greenrobot.eventbus.EventBus
 import org.jetbrains.anko.browse
 
 class TicketDetailsActivity : AppCompatActivity() {
@@ -99,15 +100,20 @@ class TicketDetailsActivity : AppCompatActivity() {
     }
 
     private fun performDeletion(ticket: Ticket) {
+        showSnack("Removing Ticket")
+        btnTicketDelete.isEnabled = false
         ticket.ticketID?.run {
             FirebaseFirestore.getInstance().collection(DatabaseUtils.TICKET_COLLECTION)
                 .document(this)
                 .delete()
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
+                        showSnack("Deleted Ticket Successfully")
                         Log.i(javaClass.simpleName, "Removed ticket: ${ticket.ticketID}")
+                        EventBus.getDefault().postSticky(TicketEvent(ticket))
                         finish()
                     } else {
+                        btnTicketDelete.isEnabled = true
                         Log.e(javaClass.simpleName, "${it.exception?.message}")
                         showSnack("Failed to remove ticket, try later")
                     }

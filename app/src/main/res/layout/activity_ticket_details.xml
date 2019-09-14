@@ -42,7 +42,6 @@
                 style="@style/CardView.Light"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/toolbar"
                 android:layout_margin="8dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -209,8 +208,6 @@
                 android:id="@+id/btnTicketContact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ticketDetails"
-                android:layout_centerHorizontal="true"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="32dp"
@@ -222,8 +219,6 @@
                 android:id="@+id/btnTicketDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ticketDetails"
-                android:layout_centerHorizontal="true"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="32dp"
@@ -237,8 +232,6 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/ivSupport"
-                android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-smallcaps"
                 android:gravity="center"

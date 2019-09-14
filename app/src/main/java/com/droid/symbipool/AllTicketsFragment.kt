@@ -1,7 +1,6 @@
 package com.droid.symbipool
 
 import android.Manifest
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,22 +13,27 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.droid.symbipool.TicketUtils.addLocations
+import com.droid.symbipool.TicketUtils.addTicket
 import com.droid.symbipool.TicketUtils.allEndLocations
 import com.droid.symbipool.TicketUtils.allStartLocations
 import com.droid.symbipool.TicketUtils.allTickets
+import com.droid.symbipool.TicketUtils.appendTickets
 import com.droid.symbipool.TicketUtils.clearAllLists
+import com.droid.symbipool.TicketUtils.distinctTicketsSorted
 import com.droid.symbipool.TicketUtils.endCityCheck
 import com.droid.symbipool.TicketUtils.endLocalityCheck
 import com.droid.symbipool.TicketUtils.filteredList
 import com.droid.symbipool.TicketUtils.genderCheck
 import com.droid.symbipool.TicketUtils.removeLocations
+import com.droid.symbipool.TicketUtils.removeTicket
+import com.droid.symbipool.TicketUtils.replaceTicket
+import com.droid.symbipool.TicketUtils.setLatestDate
 import com.droid.symbipool.TicketUtils.startCityCheck
 import com.droid.symbipool.TicketUtils.startLocalityCheck
 import com.droid.symbipool.adapters.AllTicketsAdapter
@@ -42,8 +46,8 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
-import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 
 class AllTicketsFragment : Fragment() {
@@ -63,6 +67,7 @@ class AllTicketsFragment : Fragment() {
     private var cpNextDate: Chip? = null
     private var cpFilter: Chip? = null
     private var lastPickedDate: String? = null
+    private var TAG = javaClass.simpleName
 
     companion object {
         fun newInstance(): AllTicketsFragment = AllTicketsFragment()
@@ -268,27 +273,23 @@ class AllTicketsFragment : Fragment() {
                             DocumentChange.Type.ADDED -> {
                                 Log.i(TAG, "New ticket: $ticket")
                                 addLocations(ticket)
-                                allTickets.add(ticket)
+                                addTicket(ticket)
                             }
                             DocumentChange.Type.MODIFIED -> {
                                 Log.i(TAG, "Modified ticket: $ticket")
                                 addLocations(ticket)
-                                allTickets.forEachIndexed { index, currentTicket ->
-                                    if (ticket.ticketID == currentTicket.ticketID) {
-                                        allTickets[index] = ticket
-                                    }
-                                }
+                                replaceTicket(ticket)
                             }
                             DocumentChange.Type.REMOVED -> {
                                 Log.i(TAG, "Removed ticket: $ticket")
                                 removeLocations(ticket)
-                                allTickets.remove(ticket)
+                                removeTicket(ticket)
                             }
                         }
                     }
 
                     if (allTickets.contains(TicketUtils.getPaginationTicket()))
-                        allTickets.remove(TicketUtils.getPaginationTicket())
+                        removeTicket(TicketUtils.getPaginationTicket())
 
                     val filteredList = allTickets.distinctBy { ticket ->
                         ticket.ticketID
@@ -311,7 +312,7 @@ class AllTicketsFragment : Fragment() {
                     }
 
                     EventBus.getDefault()
-                        .postSticky(TicketEvent(TicketUtils.getUserCreatedTickets()))
+                        .postSticky(UserTicketEvent(TicketUtils.getUserCreatedTickets()))
 
                     Handler().postDelayed({
                         Log.i(
@@ -321,7 +322,7 @@ class AllTicketsFragment : Fragment() {
                         adapter?.notifyItemChanged(allTickets.size - 1)
                     }, 500)
 
-                    showSnack("Found ${querySnapshot.documentChanges.size} results")
+                    showSnack(rootLayout, "Found ${querySnapshot.documentChanges.size} results")
 
                     showPaginationProgress(false)
                 }
@@ -403,7 +404,7 @@ class AllTicketsFragment : Fragment() {
                     showProgress(false)
 
                     EventBus.getDefault()
-                        .postSticky(TicketEvent(TicketUtils.getUserCreatedTickets()))
+                        .postSticky(UserTicketEvent(TicketUtils.getUserCreatedTickets()))
 
                     Handler().postDelayed({
                         Log.i(
@@ -527,7 +528,7 @@ class AllTicketsFragment : Fragment() {
                 askPermission(Manifest.permission.CALL_PHONE) {
                     activity?.let { it1 -> makeCall(it1, this) }
                 }.onDeclined {
-                    showSnack("Grant permission to place a call")
+                    showSnack(rootLayout, "Grant permission to place a call")
                 }.runtimePermission.onForeverDenied {
                     startActivity(
                         Intent(
@@ -549,19 +550,9 @@ class AllTicketsFragment : Fragment() {
                     emailIntent.putExtra(Intent.EXTRA_TEXT, "")
                     startActivity(Intent.createChooser(emailIntent, "Send email"))
                 } catch (exception: Exception) {
-                    showSnack("No email clients found, please install one")
+                    showSnack(rootLayout, "No email clients found, please install one")
                 }
             }
-        }
-    }
-
-    private fun showSnack(message: String) {
-        rootLayout?.run {
-            Snackbar.make(
-                this,
-                message,
-                Snackbar.LENGTH_LONG
-            ).show()
         }
     }
 
@@ -569,5 +560,48 @@ class AllTicketsFragment : Fragment() {
         Log.i(javaClass.simpleName, "Removing listener")
         listener?.remove()
         super.onDestroy()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        EventBus.getDefault().unregister(this)
+        super.onStop()
+    }
+
+    @Subscribe(sticky = true)
+    fun onTicketAdded(userTicketEvent: AllUserTicketEvent) {
+
+        Log.i(TAG, "Add tickets Event: ${userTicketEvent.tickets?.size}")
+
+        appendTickets(userTicketEvent.tickets)
+
+        val filteredList = distinctTicketsSorted()
+
+        adapter?.submitList(filteredList)
+
+        Handler().postDelayed({
+            setLatestDate(filteredList)
+            adapter?.notifyItemChanged(filteredList.size - 1)
+        }, 1000)
+
+        EventBus.getDefault().removeStickyEvent(userTicketEvent)
+    }
+
+    @Subscribe(sticky = true)
+    fun onTicketDeleted(ticketEvent: AllTicketsDeleteEvent) {
+
+        Log.i(TAG, "Delete ticket Event: ${ticketEvent.ticket.date}")
+
+        removeTicket(ticketEvent.ticket)
+
+        val filteredList = distinctTicketsSorted()
+
+        adapter?.submitList(filteredList)
+
+        EventBus.getDefault().removeStickyEvent(ticketEvent)
     }
 }

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.droid.symbipool.*
 import com.droid.symbipool.TicketUtils.getPreference
 import com.droid.symbipool.creationSteps.GenderStep
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.item_all_ticket.view.*
 import kotlinx.android.synthetic.main.item_pagination_ticket.view.*
 
@@ -56,7 +57,12 @@ class AllTicketsAdapter(
             itemView.btnChangeDate.setOnClickListener { clickInterface.changeDate() }
         }
 
-        fun bind(ticket: Ticket, clickListener: (Ticket) -> Unit, canDelete: Boolean, clickInterface: ClickInterface) {
+        fun bind(
+            ticket: Ticket,
+            clickListener: (Ticket) -> Unit,
+            canDelete: Boolean,
+            clickInterface: ClickInterface
+        ) {
 
             itemView.tvDateTime.text = TicketUtils.getTimeAndDate(ticket)
             itemView.tvStartAddress.text = TicketUtils.getStartAddress(ticket)
@@ -77,7 +83,13 @@ class AllTicketsAdapter(
                 itemView.btnDelete.gone()
             }
 
-            itemView.setOnClickListener { clickInterface.loadTicketDetails(ticket)}
+            if (ticket.creator == FirebaseAuth.getInstance().currentUser?.email) {
+                itemView.userTicketHint.visible()
+            } else {
+                itemView.userTicketHint.gone()
+            }
+
+            itemView.setOnClickListener { clickInterface.loadTicketDetails(ticket) }
             itemView.btnContact.setOnClickListener { clickListener(ticket) }
             itemView.btnDelete.setOnClickListener { clickListener(ticket) }
         }

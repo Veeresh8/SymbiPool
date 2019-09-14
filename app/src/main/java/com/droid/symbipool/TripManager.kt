@@ -77,5 +77,17 @@ data class TicketFilter(
 ) : Serializable
 
 data class TicketEvent(
-    var tickets: List<Ticket>? = null
+    var ticket: Ticket
+)
+
+data class UserTicketEvent(
+    var tickets: ArrayList<Ticket>? = null
+)
+
+data class AllTicketsDeleteEvent(
+    var ticket: Ticket
+)
+
+data class AllUserTicketEvent(
+    var tickets: ArrayList<Ticket>? = null
 )

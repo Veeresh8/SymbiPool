@@ -10,6 +10,7 @@ object DatabaseUtils {
     const val EMAILS_COLLECTION = "emails"
     const val TIME = "time"
     const val DATE = "date"
+    const val CREATOR = "creator"
     private var dateFormat = SimpleDateFormat("dd-MMM-yyyy")
     var latestDate: String? = null
 

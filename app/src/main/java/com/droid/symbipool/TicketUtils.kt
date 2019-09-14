@@ -19,12 +19,13 @@ object TicketUtils {
     var allEndLocations: Set<String> = HashSet()
     var allCities: Set<String> = HashSet()
 
-
     var filteredList: List<Ticket> = ArrayList()
     var userCreatedList: List<Ticket> = ArrayList()
     var allTickets: ArrayList<Ticket> = ArrayList()
 
     const val ANY_LOCATION = "All"
+
+    private var TAG = javaClass.simpleName
 
     fun clearAllLists() {
         filteredList = ArrayList()
@@ -35,11 +36,11 @@ object TicketUtils {
         allStartLocations = HashSet()
     }
 
-    fun getUserCreatedTickets(): List<Ticket> {
+    fun getUserCreatedTickets(): ArrayList<Ticket> {
         userCreatedList = allTickets.map { it }
             .filter { ticket -> ticket.creator == FirebaseAuth.getInstance().currentUser?.email }
         Log.i(javaClass.simpleName, "User lists: ${userCreatedList.size}")
-        return userCreatedList
+        return userCreatedList as ArrayList<Ticket>
     }
 
     fun getTimeAndDate(ticket: Ticket): String {
@@ -133,7 +134,12 @@ object TicketUtils {
     }
 
     fun getPaginationTicket(): Ticket {
-        return Ticket(isPaginationTicket = true, ticketID = "Pagination Ticket", date = "08-Sep-2030", time = 10436668200000)
+        return Ticket(
+            isPaginationTicket = true,
+            ticketID = "Pagination Ticket",
+            date = "08-Sep-2030",
+            time = 10436668200000
+        )
     }
 
     fun getAllStartLocations(): List<String> {
@@ -250,5 +256,60 @@ object TicketUtils {
         val calendar = Calendar.getInstance()
         calendar.time = formattedDate
         return calendar.timeInMillis
+    }
+
+    fun getCurrentTime(): Long {
+        return Calendar.getInstance().timeInMillis
+    }
+
+    fun addTicket(ticket: Ticket?) {
+        ticket?.let {
+            Log.i(TAG, "Adding ticket: $ticket")
+            allTickets.add(it)
+        }
+    }
+
+    fun removeTicket(ticket: Ticket?) {
+        Log.i(TAG, "Removing ticket: $ticket")
+
+        val distinctList = allTickets.distinctBy {
+            it.ticketID
+        } as ArrayList<Ticket>
+
+        allTickets = distinctList
+
+        allTickets.remove(ticket)
+    }
+
+    fun replaceTicket(ticket: Ticket) {
+        allTickets.forEachIndexed { index, currentTicket ->
+            if (ticket.ticketID == currentTicket.ticketID) {
+                allTickets[index] = ticket
+            }
+        }
+    }
+
+    fun appendTickets(tickets: ArrayList<Ticket>?) {
+        if (tickets != null) {
+            Log.i(TAG, "Appending tickets: ${tickets.size}")
+            allTickets.addAll(tickets)
+        }
+    }
+
+    fun distinctTicketsSorted(): List<Ticket> {
+        Log.i(TAG, "Distinct tickets")
+        return allTickets.distinctBy { ticket ->
+            ticket.ticketID
+        }.sortedBy { it.time }
+    }
+
+    fun setLatestDate(list: List<Ticket>) {
+        if (list.size >= 2) {
+            Log.i(
+                TAG,
+                "Changing latest date to: ${DatabaseUtils.latestDate} || ${DatabaseUtils.getNextDate()}}"
+            )
+            DatabaseUtils.latestDate = list[list.size - 2].date
+        }
     }
 }

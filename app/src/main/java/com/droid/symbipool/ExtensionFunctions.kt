@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 
 fun Activity.hideSoftKeyboard() {
     currentFocus?.run {
@@ -79,12 +80,13 @@ fun isLocationEnabled(context: Context): Boolean {
     }
 }
 
-fun isViewVisibleToUser(view: View, rootView: View): Boolean {
-    val scrollBounds = Rect()
-    rootView.getDrawingRect(scrollBounds)
 
-    val top = view.y
-    val bottom = top + view.height
-
-    return scrollBounds.top < top && scrollBounds.bottom > bottom
+fun showSnack(view: View?, message: String) {
+    view?.run {
+        Snackbar.make(
+            this,
+            message,
+            Snackbar.LENGTH_LONG
+        ).show()
+    }
 }
