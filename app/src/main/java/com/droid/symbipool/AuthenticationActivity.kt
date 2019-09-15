@@ -35,7 +35,10 @@ class AuthenticationActivity : AppCompatActivity() {
         FirebaseFirestore.getInstance().collection(DatabaseUtils.EMAILS_COLLECTION)
             .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 if (firebaseFirestoreException != null) {
-                    Log.e(javaClass.simpleName, "Query error: ${firebaseFirestoreException.message}")
+                    Log.e(
+                        javaClass.simpleName,
+                        "Query error: ${firebaseFirestoreException.message}"
+                    )
                     return@addSnapshotListener
                 }
 
@@ -67,7 +70,11 @@ class AuthenticationActivity : AppCompatActivity() {
 
     private fun openBS(authType: AuthType) {
         if (!isConnectedToNetwork(this)) {
-            Snackbar.make(rootLayout, "Please verify your network connection to proceed", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(
+                rootLayout,
+                "Please verify your network connection to proceed",
+                Snackbar.LENGTH_LONG
+            ).show()
             return
         }
 
@@ -153,7 +160,11 @@ class AuthenticationActivity : AppCompatActivity() {
                                 }
                             }
                         } else {
-                            Snackbar.make(rootLayout, "${it.exception?.message}", Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(
+                                rootLayout,
+                                "${it.exception?.message}",
+                                Snackbar.LENGTH_LONG
+                            ).show()
                         }
                     }
             } else {
@@ -165,11 +176,19 @@ class AuthenticationActivity : AppCompatActivity() {
                             if (currentUser != null && currentUser.isEmailVerified) {
                                 processToDashboard()
                             } else {
-                                Snackbar.make(rootLayout, "Please verify your email to proceed", Snackbar.LENGTH_LONG)
+                                Snackbar.make(
+                                    rootLayout,
+                                    "Please verify your email to proceed",
+                                    Snackbar.LENGTH_LONG
+                                )
                                     .show()
                             }
                         } else {
-                            Snackbar.make(rootLayout, "${task.exception?.message}", Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(
+                                rootLayout,
+                                "${task.exception?.message}",
+                                Snackbar.LENGTH_LONG
+                            ).show()
                         }
                     }
             }
@@ -199,8 +218,7 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun isEmailValid(email: CharSequence): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-                //&& isSymbosisEmail(email)
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && isSymbosisEmail(email)
     }
 
     private fun isSymbosisEmail(userEmail: CharSequence): Boolean {

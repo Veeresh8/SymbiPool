@@ -99,10 +99,11 @@ class AllTicketsFragment : Fragment() {
 
     private fun Chip.resetFilter() {
         showProgress(true)
-        adapter?.submitList(allTickets)
+        val filteredList = distinctTicketsSorted()
+        adapter?.submitList(filteredList)
         this.visibility = View.GONE
         showProgress(false)
-        showCount(allTickets)
+        showCount(filteredList)
         recyclerView?.scrollToPosition(0)
     }
 
@@ -250,8 +251,12 @@ class AllTicketsFragment : Fragment() {
 
                         DatabaseUtils.latestDate = date
 
-                        adapter?.notifyItemChanged(allTickets.size - 1)
+                        val index = adapter?.currentList?.indexOf(TicketUtils.getPaginationTicket())
+
+                        index?.let { adapter?.notifyItemChanged(it) }
+
                         showPaginationProgress(false)
+
                         val snackBar = rootLayout?.let {
                             Snackbar
                                 .make(
@@ -577,6 +582,10 @@ class AllTicketsFragment : Fragment() {
 
         Log.i(TAG, "Add tickets Event: ${userTicketEvent.tickets?.size}")
 
+        userTicketEvent.tickets?.forEach {
+            addLocations(it)
+        }
+
         appendTickets(userTicketEvent.tickets)
 
         val filteredList = distinctTicketsSorted()
@@ -595,6 +604,8 @@ class AllTicketsFragment : Fragment() {
     fun onTicketDeleted(ticketEvent: AllTicketsDeleteEvent) {
 
         Log.i(TAG, "Delete ticket Event: ${ticketEvent.ticket.date}")
+
+        removeLocations(ticketEvent.ticket)
 
         removeTicket(ticketEvent.ticket)
 

@@ -242,10 +242,12 @@
 
         <ImageView
                 android:id="@+id/ivSupport"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="fitXY"
+                android:layout_width="250dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
                 android:visibility="visible"
+                android:layout_marginBottom="16dp"
                 android:src="@drawable/banner" />
 
     </LinearLayout>

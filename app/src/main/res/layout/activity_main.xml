@@ -33,15 +33,14 @@
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
+                    android:layout_gravity="center"
                     android:layout_marginEnd="16dp"
                     android:drawablePadding="16dp"
-                    android:fontFamily="sans-serif-smallcaps"
                     android:padding="10dp"
-                    android:text="Symbi Pool"
+                    android:text="SymbiPool"
                     android:textAlignment="center"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
         </androidx.appcompat.widget.Toolbar>
